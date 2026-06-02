@@ -5,10 +5,70 @@
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
 
+
 // 这行代码告诉虚幻引擎的服务器（Server）：这个 Player Controller 需要进行网络同步（复制）。在多人联机游戏中，服务器需要把控制器的状态、网络 RPC（远程过程调用）正确地分发和同步给对应的客户端。
 AAuraPlayerController::AAuraPlayerController()
 {
 	bReplicates = true;
+}
+
+void AAuraPlayerController::PlayerTick(float DeltaTime)
+{
+	Super::PlayerTick(DeltaTime);
+	CursorTrace();
+}
+
+void AAuraPlayerController::CursorTrace()
+{
+	FHitResult CursorHit;
+	GetHitResultUnderCursor(ECC_Visibility, false, CursorHit);
+	if (!CursorHit.bBlockingHit) return;
+
+	LastActor = ThisActor;
+	ThisActor = Cast<IEnemyInterface>(CursorHit.GetActor());
+
+	/*
+	* 追踪鼠标的状况可能有以下几种情况
+	* A. 上个Actor和这个Actor都是空的
+	*	-什么都不做
+	* B. 上个Actor是空但是这个是有效的
+	*	-高亮这个Actor
+	* C. 上个Actor是有效的但是这个是空的
+	*	-取消高亮上个Actor
+	* D. 上个Actor和这个Actor都是有效的，但是这两个Actor不是同一个
+	*	-取消高亮上个Actor然后高亮这个Actor
+	* E. 上个Actor和这个Actor都是有效的，并且是同一个
+	*	-什么都不做
+	*/
+
+	if (LastActor == nullptr)
+	{
+		if (ThisActor != nullptr) {
+			//Case B
+			ThisActor->HighlightActor();
+		}
+		else {
+			//Case A
+		}
+	}
+	else // LastActor != nullptr
+	{
+		if (ThisActor == nullptr) {
+			//Case C
+			LastActor->UnHighlightActor();
+		}
+		else //两个Actor都有效
+		{
+			if (LastActor != ThisActor) {
+				//Case D
+				LastActor->UnHighlightActor();
+				ThisActor->HighlightActor();
+			}
+			else {
+				//Case E 什么都不做
+			}
+		}
+	}
 }
 
 void AAuraPlayerController::BeginPlay()
@@ -65,3 +125,5 @@ void AAuraPlayerController::Move(const FInputActionValue& InputActionValue)
 	}
 
 }
+
+
