@@ -17,7 +17,7 @@ void AAuraPlayerController::PlayerTick(float DeltaTime)
 	Super::PlayerTick(DeltaTime);
 	CursorTrace();
 }
-
+// 鼠标移动到人物高亮功能
 void AAuraPlayerController::CursorTrace()
 {
 	FHitResult CursorHit;

@@ -2,14 +2,22 @@
 
 #include "Character/AuraEnemy.h" // 自己的头文件要放在第一个
 #include "Aura/Aura.h"
+#include <AbilitySystem/My_AuraAbilitySystemComponent.h>
+#include <AbilitySystem/AuraAttributeSet.h>
 
 AAuraEnemy::AAuraEnemy()
 {
 	GetMesh()->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
+	// 只在enemyclass中初始化而不在Aura类中初始化
+	AbilitySystemComponent = CreateDefaultSubobject<UMy_AuraAbilitySystemComponent>("AbilitySystemComponent");
+	AbilitySystemComponent->SetIsReplicated(true);
+
+	AttributeSet = CreateDefaultSubobject<UAuraAttributeSet>("AttributeSet");
 }
 
 void AAuraEnemy::HighlightActor()
 {
+	// 设置角色网格组件和武器组件的自定义深度渲染，使它们在游戏中被高亮显示。具体来说，这段代码启用了自定义深度渲染，并将自定义深度模板值设置为 CUSTOM_DEPTH_RED（一个预定义的常量，通常用于指定红色高亮）。这样，当玩家的鼠标光标悬停在敌人身上时，敌人就会被高亮显示，提供视觉反馈。
 	GetMesh()->SetRenderCustomDepth(true);
 	GetMesh()->SetCustomDepthStencilValue(CUSTOM_DEPTH_RED);
 	Weapon->SetRenderCustomDepth(true);

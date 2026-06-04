@@ -14,6 +14,7 @@ class AURA_API AAuraEnemy : public AAuraCharacterBase, public IEnemyInterface
 {
 	GENERATED_BODY()
 public:
+	// 定义模板方法并且定义接口
 	AAuraEnemy();
 	virtual void HighlightActor() override;
 	virtual void UnHighlightActor() override;
