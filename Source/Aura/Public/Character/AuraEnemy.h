@@ -16,6 +16,11 @@ class AURA_API AAuraEnemy : public AAuraCharacterBase, public IEnemyInterface
 public:
 	// 定义模板方法并且定义接口
 	AAuraEnemy();
+
+	// 敌人接口
 	virtual void HighlightActor() override;
 	virtual void UnHighlightActor() override;
+	// 结束敌人接口
+protected:
+	virtual void BeginPlay() override;
 };
