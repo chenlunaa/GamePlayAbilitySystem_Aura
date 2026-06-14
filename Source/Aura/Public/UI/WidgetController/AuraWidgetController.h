@@ -42,6 +42,8 @@ class AURA_API UAuraWidgetController : public UObject
 public:
 	UFUNCTION(BlueprintCallable)
 	void SetWidgetControllerParams(const FWidgetControllerParams& WCParams);
+	virtual void BroadcastInitialValues();
+	virtual void BindCallbacksToDependencies();
 protected:
 	// 获取4个主要变量，订阅这4个变量
 	UPROPERTY(BlueprintReadOnly, category="WidgetController")
