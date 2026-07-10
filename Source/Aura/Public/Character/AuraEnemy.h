@@ -23,4 +23,5 @@ public:
 	// 结束敌人接口
 protected:
 	virtual void BeginPlay() override;
+	virtual void InitAbilityActorInfo() override;
 };

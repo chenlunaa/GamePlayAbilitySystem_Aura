@@ -3,11 +3,11 @@
 
 #include "Player/AuraPlayerState.h"
 #include <AbilitySystem/AuraAttributeSet.h>
-#include <AbilitySystem/My_AuraAbilitySystemComponent.h>
+#include <AbilitySystem/AuraAbilitySystemComponent.h>
 
 AAuraPlayerState::AAuraPlayerState()
 {
-	AbilitySystemComponent = CreateDefaultSubobject<UMy_AuraAbilitySystemComponent>("AbilitySystemComponent");
+	AbilitySystemComponent = CreateDefaultSubobject<UAuraAbilitySystemComponent>("AbilitySystemComponent");
 	AbilitySystemComponent->SetIsReplicated(true);
 	AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Mixed);
 

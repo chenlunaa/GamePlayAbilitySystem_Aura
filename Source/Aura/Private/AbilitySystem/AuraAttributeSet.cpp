@@ -77,6 +77,7 @@ void UAuraAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute, 
 
 // 通过这个函数我们几乎可以获得和这次GameEffect生效的相关的所有信息,这就是为什么不用
 // void UAuraAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue)的原因
+// NewValue无法修改真实值的Bug，NewValue = FMath::Clamp(NewValue, 0.f, GetMaxHealth());修改的只是一个类似于返回值一样的东西，而不是修改真实值，真实在AttributeSet的值仍然可能溢出。
 void UAuraAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
 {
 	Super::PostGameplayEffectExecute(Data);
@@ -84,6 +85,15 @@ void UAuraAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallba
 	FEffectProperties Props;
 	SetEffectProperties(Data, Props);
 	
+	if (Data.EvaluatedData.Attribute == GetHealthAttribute())
+	{
+		SetHealth(FMath::Clamp(GetHealth(), 0.f, GetMaxHealth()));
+	}
+	
+	if (Data.EvaluatedData.Attribute == GetManaAttribute())
+	{
+		SetMana(FMath::Clamp(GetMana(), 0.f, GetMaxMana()));
+	}
 }
 
 // 既能得到旧值又能得到新值，说明这个函数是在属性改变后调用的
