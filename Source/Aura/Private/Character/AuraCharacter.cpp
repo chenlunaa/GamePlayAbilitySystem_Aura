@@ -40,6 +40,13 @@ void AAuraCharacter::OnRep_PlayerState()
 	InitAbilityActorInfo();
 }
 
+int32 AAuraCharacter::GetPlayerLevel()
+{
+	const AAuraPlayerState* AuraPlayerState = GetPlayerState<AAuraPlayerState>();
+	check(AuraPlayerState);
+	return AuraPlayerState->GetPlayerLevel();
+}
+
 // InitAbilityActorInfo() 的作用是 建立 GAS 中关键对象之间的关联关系，让 Ability System 知道"谁是谁"
 // 相当于是初始化AbilitySystemComponent
 void AAuraCharacter::InitAbilityActorInfo()
@@ -58,6 +65,6 @@ void AAuraCharacter::InitAbilityActorInfo()
 			AuraHUD->InitOverlay(AuraPlayerController, AuraPlayerState, AbilitySystemComponent, AttributeSet);
 		}
 	}
-	InitializePrimaryAttributes();
+	InitializeDefaultAttributes();
 
 }
