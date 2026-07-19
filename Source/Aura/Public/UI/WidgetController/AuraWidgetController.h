@@ -15,7 +15,7 @@ struct FWidgetControllerParams
 	GENERATED_BODY()
 
 	FWidgetControllerParams() {}
-	FWidgetControllerParams(APlayerController* PC, APlayerState* PS, UAbilitySystemComponent* ASC, UAttributeSet* AS) : PlayerController(PC), PlayerState(PS), AbilitySystemponent(ASC), AttributeSet(AS){}
+	FWidgetControllerParams(APlayerController* PC, APlayerState* PS, UAbilitySystemComponent* ASC, UAttributeSet* AS) : PlayerController(PC), PlayerState(PS), AbilitySystemComponent(ASC), AttributeSet(AS){}
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TObjectPtr<APlayerController> PlayerController = nullptr;
@@ -24,7 +24,7 @@ struct FWidgetControllerParams
 	TObjectPtr<APlayerState> PlayerState = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TObjectPtr<UAbilitySystemComponent> AbilitySystemponent = nullptr;
+	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TObjectPtr<UAttributeSet> AttributeSet = nullptr;
@@ -42,7 +42,9 @@ class AURA_API UAuraWidgetController : public UObject
 public:
 	UFUNCTION(BlueprintCallable)
 	void SetWidgetControllerParams(const FWidgetControllerParams& WCParams);
+	UFUNCTION(BlueprintCallable)
 	virtual void BroadcastInitialValues();
+	
 	virtual void BindCallbacksToDependencies();
 protected:
 	// 获取4个主要变量，订阅这4个变量
