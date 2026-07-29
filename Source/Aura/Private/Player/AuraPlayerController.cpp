@@ -3,7 +3,7 @@
 
 #include "Player/AuraPlayerController.h"
 #include "EnhancedInputSubsystems.h"
-#include "EnhancedInputComponent.h"
+#include "Input/AuraInputComponent.h"
 
 
 // 这行代码告诉虚幻引擎的服务器（Server）：这个 Player Controller 需要进行网络同步（复制）。在多人联机游戏中，服务器需要把控制器的状态、网络 RPC（远程过程调用）正确地分发和同步给对应的客户端。
@@ -11,6 +11,16 @@ AAuraPlayerController::AAuraPlayerController()
 {
 	bReplicates = true;
 }
+
+/*
+* 鼠标悬停在敌人上
+  → CursorTrace 检测到 ThisActor 实现了 IEnemyInterface
+  → 调用 HighlightActor()
+	→ GetMesh()->SetRenderCustomDepth(true)
+	→ GetMesh()->SetCustomDepthStencilValue(250)
+  → 后处理体积的 PP_Highlight 材质读取到 Stencil=250
+  → 渲染红色轮廓 ✨
+ */
 
 void AAuraPlayerController::PlayerTick(float DeltaTime)
 {
@@ -71,6 +81,21 @@ void AAuraPlayerController::CursorTrace()
 	}
 }
 
+void AAuraPlayerController::AbilityInputTagPressed(FGameplayTag InputTag)
+{
+	GEngine->AddOnScreenDebugMessage(1, 3.f, FColor::Red, *InputTag.ToString());
+}
+
+void AAuraPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
+{
+	GEngine->AddOnScreenDebugMessage(2, 3.f, FColor::Blue, *InputTag.ToString());
+}
+
+void AAuraPlayerController::AbilityInputTagHeld(FGameplayTag InputTag)
+{
+	GEngine->AddOnScreenDebugMessage(3, 3.f, FColor::Green, *InputTag.ToString());
+}
+
 void AAuraPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
@@ -82,7 +107,7 @@ void AAuraPlayerController::BeginPlay()
 		Subsystem->AddMappingContext(AuraContext, 0);：核心一步！把我们在编辑器里配好的 AuraContext 注入到大管家里面。
 		参数 0 是优先级（Priority）
 	*/
-	// 把输入映射上下文添加到玩家子系统中
+	// 把输入映射上下文添加到玩家子系统中，获取到玩家的增强输入系统，获取到该系统后才能设置各种各样的输入形态
 	UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer());
 	if (Subsystem)
 	{
@@ -107,9 +132,11 @@ void AAuraPlayerController::SetupInputComponent()
 {
 	Super::SetupInputComponent();
 
-	UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(InputComponent); // 转化成这个UEnhancedInputComponent类型，转化失败则程序崩溃，因为默认的输入类型是EnhancedInputComponent.
+	// 把父类原有的InputComponent转化成增强输入的Component，否则报错
+	UAuraInputComponent* AuraInputComponent = CastChecked<UAuraInputComponent>(InputComponent); // 转化成这个UEnhancedInputComponent类型，转化失败则程序崩溃，因为默认的输入类型是EnhancedInputComponent.
 	// 绑定MoveAction输入事件，当玩家触发这个输入事件时（比如按下 WASD 键或者摇动手柄），就会调用 AAuraPlayerController::Move 函数来处理这个输入事件。
-	EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, & AAuraPlayerController::Move);
+	AuraInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, & AAuraPlayerController::Move);
+	AuraInputComponent->BindAbilityActions(InputConfig, this, &ThisClass::AbilityInputTagPressed, &ThisClass::AbilityInputTagReleased, &ThisClass::AbilityInputTagHeld);
 }
 // 获取玩家输入的移动数据InputAxisVector，并根据当前玩家相机的旋转角度GetControlRotation计算出前后左右的移动方向，最后把这些移动输入应用到玩家控制的 Pawn 上。
 void AAuraPlayerController::Move(const FInputActionValue& InputActionValue)
