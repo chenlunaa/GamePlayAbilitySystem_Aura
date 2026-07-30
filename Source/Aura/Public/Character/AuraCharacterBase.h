@@ -31,6 +31,10 @@ protected:
 	// 给武器绑定一个骨骼系统
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	TObjectPtr<class USkeletalMeshComponent> Weapon;
+	UPROPERTY(EditAnywhere, Category = "Combat")
+	FName WeaponTipSocketName;
+	
+	virtual FVector GetCombatSocketLocation() override;
 
 	UPROPERTY()
 	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent;

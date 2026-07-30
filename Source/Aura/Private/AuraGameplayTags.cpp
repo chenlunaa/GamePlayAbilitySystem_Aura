@@ -86,27 +86,27 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 		FString("Input Tag For Left Mouse Button")
 		);
 	
-	GameplayTags.InputTag_LMB = UGameplayTagsManager::Get().AddNativeGameplayTag(
+	GameplayTags.InputTag_RMB = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("InputTag.RMB"), 
 	FString("Input Tag For Right Mouse Button")
 		);
 	
-	GameplayTags.InputTag_LMB = UGameplayTagsManager::Get().AddNativeGameplayTag(
+	GameplayTags.InputTag_Num1 = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("InputTag.Num1"), 
 	FString("Input Tag For 1 Key")
 		);
 	
-	GameplayTags.InputTag_LMB = UGameplayTagsManager::Get().AddNativeGameplayTag(
+	GameplayTags.InputTag_Num2 = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("InputTag.Num2"), 
 	FString("Input Tag For 2 Key")
 		);
 	
-	GameplayTags.InputTag_LMB = UGameplayTagsManager::Get().AddNativeGameplayTag(
+	GameplayTags.InputTag_Num3 = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("InputTag.Num3"), 
 	FString("Input Tag For 3 Key")
 		);
 	
-	GameplayTags.InputTag_LMB = UGameplayTagsManager::Get().AddNativeGameplayTag(
+	GameplayTags.InputTag_Num4 = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("InputTag.Num4"), 
 	FString("Input Tag For 4 Key")
 		);
