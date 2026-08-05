@@ -40,6 +40,14 @@ private:
 
 	UPROPERTY(EditAnywhere, Category="Input")
 	TObjectPtr<UInputAction> MoveAction; // 一个输入动作，通常对应IA_Move蓝图，设置值为Vec2D的那个
+	
+	UPROPERTY(EditAnywhere, Category="Input")
+	TObjectPtr<UInputAction> ShiftAction; 
+	
+	void ShiftPressed() {bShiftKeyDown = true;};
+	void ShiftReleased() {bShiftKeyDown = false;};
+	
+	bool bShiftKeyDown = false;
 
 	void Move(const FInputActionValue& InputActionValue);// 回调函数，获得实际移动数据
 	//这是一个非常强大的数据包裹。无论玩家是用手柄摇杆（推多大距离产生多大的浮点数值）还是键盘（按下就是 1，松开就是 0），引擎都会把这些输入数据封装进 InputActionValue 中传给这个函数。
