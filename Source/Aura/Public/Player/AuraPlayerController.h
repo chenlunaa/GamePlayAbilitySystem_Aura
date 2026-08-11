@@ -8,6 +8,7 @@
 #include "GameplayTagContainer.h"
 #include "AuraPlayerController.generated.h"
 
+class UDamageTextComponent;
 class UAuraInputConfig;
 class UInputMappingContext;
 class UInputAction;
@@ -28,6 +29,9 @@ public:
 	AAuraPlayerController(); // 该控制器的公有成员
 	// 构造函数：类的初始化函数。通常在这里设置一些默认值（默认参数），或者为类创建一些默认的子组件（Subobjects）。
 	virtual void PlayerTick(float DeltaTime) override; // 每帧调用一次，DeltaTime 是两帧之间的时间间隔。通常在这里处理一些需要持续更新的逻辑，比如玩家输入、相机控制等。
+	
+	UFUNCTION(Client, Reliable)
+	void ShowDamageNumber(float Damage, ACharacter* TargetCharacter);
 protected:
 	virtual void BeginPlay() override; //当游戏开始、或者这个控制器被生成（Spawn）到世界中时，它会自动触发且仅触发一次。
 	// 重写了父类的BeginPlay函数，以便在游戏开始时执行一些特定的逻辑，比如设置输入映射上下文、显示鼠标光标等。
@@ -81,4 +85,7 @@ private:
 	TObjectPtr<USplineComponent> Spline;
 	
 	void AutoRun();
+	
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<UDamageTextComponent> DamageTextComponentClass;
 };
