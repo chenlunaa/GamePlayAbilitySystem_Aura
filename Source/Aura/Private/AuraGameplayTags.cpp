@@ -116,6 +116,58 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 	FString("Damage")
 		);
 	
+	/*
+	 * Damage Types
+	 */
+	GameplayTags.Damage_Fire = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Damage.Fire"), 
+	FString("Fire Damage Type")
+		);
+	
+	GameplayTags.Damage_Lighting = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Damage.Lighting"), 
+	FString("Lighting Damage Type")
+		);
+	
+		GameplayTags.Damage_Arcane = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Damage.Arcane"), 
+	FString("Arcane Damage Type")
+		);
+	
+		GameplayTags.Damage_Physical = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Damage.Physical"), 
+	FString("Physical Damage Type")
+		);
+	
+	/*
+	 * Resistances
+	 */
+	GameplayTags.Attribute_Resistance_Fire = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Attributes.Resistance.Fire"), 
+		FString("Resistance to Fire Damage")
+		);
+	
+	GameplayTags.Attribute_Resistance_Arcane = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Attributes.Resistance.Arcane"), 
+		FString("Resistance to Arcane Damage")
+		);
+	
+	GameplayTags.Attribute_Resistance_Lighting = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Attributes.Resistance.Lighting"), 
+		FString("Resistance to Lighting Damage")
+		);
+	
+	GameplayTags.Attribute_Resistance_Physical = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Attributes.Resistance.Physical"), 
+		FString("Resistance to Physical Damage")
+		);
+	
+	//MapToResistance
+	GameplayTags.DamageTypesToResistance.Add(GameplayTags.Damage_Fire, GameplayTags.Attribute_Resistance_Fire);
+	GameplayTags.DamageTypesToResistance.Add(GameplayTags.Damage_Lighting, GameplayTags.Attribute_Resistance_Lighting);
+	GameplayTags.DamageTypesToResistance.Add(GameplayTags.Damage_Arcane, GameplayTags.Attribute_Resistance_Arcane);
+	GameplayTags.DamageTypesToResistance.Add(GameplayTags.Damage_Physical, GameplayTags.Attribute_Resistance_Physical);
+	
 	GameplayTags.Effects_HitReact = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("Effects.HitReact"), 
 	FString("Tag Granted When Hit Reacting")
