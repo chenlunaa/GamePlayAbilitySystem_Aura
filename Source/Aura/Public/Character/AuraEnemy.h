@@ -8,7 +8,12 @@
 #include "Interaction/EnemyInterface.h"
 #include "AbilitySystem/Data/CharacterClassInfo.h"
 #include "AuraEnemy.generated.h" // 必须是最后一个include
+
+
+class AAuraAIController;
+class UBehaviorTree;
 class UWidgetComponent;
+
 /**
  * 
  */
@@ -19,6 +24,7 @@ class AURA_API AAuraEnemy : public AAuraCharacterBase, public IEnemyInterface
 public:
 	// 定义模板方法并且定义接口
 	AAuraEnemy();
+	virtual void PossessedBy(AController* NewController) override;
 
 	// 敌人接口
 	virtual void HighlightActor() override;
@@ -61,4 +67,9 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TObjectPtr<UWidgetComponent> HealthBar;
 	
+	UPROPERTY(EditAnywhere, Category="AI")
+	TObjectPtr<UBehaviorTree> BehaviorTree;
+	
+	UPROPERTY()
+	TObjectPtr<AAuraAIController> AuraAIController;
 };
