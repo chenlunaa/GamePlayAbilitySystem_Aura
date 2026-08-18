@@ -6,6 +6,7 @@
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
 #include "NiagaraFunctionLibrary.h"
+#include "AbilitySystem/AuraAbilitySystemLibrary.h"
 #include "Aura/Aura.h"
 #include "Components/AudioComponent.h"
 #include "Components/SphereComponent.h"
@@ -73,6 +74,10 @@ void AAuraProjectile::OnSphereOverride(UPrimitiveComponent* OverlappedComponent,
 		return;
 	}
 	
+	if (!UAuraAbilitySystemLibrary::IsNotFriend(GetOwner(), OtherActor))
+	{
+		return;
+	}
 	if (!bHit)
 	{
 		UGameplayStatics::PlaySoundAtLocation(this, ImpactSound, GetActorLocation(), FRotator::ZeroRotator);

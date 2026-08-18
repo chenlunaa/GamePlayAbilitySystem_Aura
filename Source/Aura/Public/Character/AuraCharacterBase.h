@@ -44,8 +44,9 @@ protected:
 	virtual void BeginPlay() override;
 
 	// 给武器绑定一个骨骼系统
-	UPROPERTY(EditAnywhere, Category = "Combat")
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Combat")
 	TObjectPtr<class USkeletalMeshComponent> Weapon;
+	
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	FName WeaponTipSocketName;
 	
