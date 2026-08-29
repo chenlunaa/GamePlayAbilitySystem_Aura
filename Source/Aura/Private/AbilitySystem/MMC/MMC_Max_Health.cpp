@@ -12,6 +12,7 @@ UMMC_Max_Health::UMMC_Max_Health()
 	VigorDef.AttributeSource = EGameplayEffectAttributeCaptureSource::Target;
 	VigorDef.bSnapshot = false;
 	
+	// 提前告诉GAS这个函数要访问的Attributes
 	RelevantAttributesToCapture.Add(VigorDef);
 }
 
@@ -26,6 +27,7 @@ float UMMC_Max_Health::CalculateBaseMagnitude_Implementation(const FGameplayEffe
 	EvaluationParameters.TargetTags = TargetTags;
 	
 	float Vigor = 0.f;
+	// 从AttributeSet中找到对应的属性值
 	GetCapturedAttributeMagnitude(VigorDef, Spec, EvaluationParameters, Vigor);
 	Vigor = FMath::Max<float>(Vigor, 0.f);
 	

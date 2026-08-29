@@ -47,7 +47,7 @@ public:
 	
 	virtual void BindCallbacksToDependencies();
 protected:
-	// 获取4个主要变量，订阅这4个变量
+	// 获取4个主要变量，订阅这4个变量 Models数据来源
 	UPROPERTY(BlueprintReadOnly, category="WidgetController")
 	TObjectPtr<APlayerController> PlayerController;
 

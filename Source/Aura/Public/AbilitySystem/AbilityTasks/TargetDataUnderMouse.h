@@ -9,7 +9,7 @@
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FMouseTargetDataSignature, const FGameplayAbilityTargetDataHandle&, DataHandle);
 
 /**
- * 
+ *  GAS预测机制的模板和大致流程，Client和Server的数据互通
  */
 UCLASS()
 class AURA_API UTargetDataUnderMouse : public UAbilityTask
@@ -24,6 +24,7 @@ public:
 	FMouseTargetDataSignature ValidData;
 	
 private:
+	// 需要一个可靠的“客户端 → 服务器”目标数据传输机制
 	virtual void Activate() override;
 	
 	void SendMouseCursorData();

@@ -26,6 +26,7 @@ void UTargetDataUnderMouse::Activate()
 		const FPredictionKey ActivationPredictionKey = GetActivationPredictionKey();
 		
 		AbilitySystemComponent.Get()->AbilityTargetDataSetDelegate(SpecHandle, ActivationPredictionKey).AddUObject(this, &UTargetDataUnderMouse::OnTargetDataReplicatedCallback);
+		// 判断CursorData是否到达Server
 		const bool bCalledDelegate = AbilitySystemComponent.Get()->CallReplicatedTargetDataDelegatesIfSet(SpecHandle, ActivationPredictionKey);
 		if (!bCalledDelegate)
 		{
@@ -47,6 +48,7 @@ void UTargetDataUnderMouse::SendMouseCursorData()
 	Data->HitResult = CursorHit;
 	DataHandle.Add(Data);
 	
+	// 利用PredictionKey来作为判断是否预测成功的标志
 	AbilitySystemComponent->ServerSetReplicatedTargetData(
 		GetAbilitySpecHandle(), 
 		GetActivationPredictionKey(), 
@@ -54,6 +56,7 @@ void UTargetDataUnderMouse::SendMouseCursorData()
 		FGameplayTag(), 
 		AbilitySystemComponent->ScopedPredictionKey);
 	
+	// ：广播前检查能力是否仍激活，避免能力已结束时还在广播。
 	if (ShouldBroadcastAbilityTaskDelegates())
 	{
 		ValidData.Broadcast(DataHandle);

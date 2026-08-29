@@ -16,7 +16,9 @@ class AURA_API AAuraCharacter : public AAuraCharacterBase
 public:
 	// 俯视角 RPG 移动方案——角色在平面上移动，自动面向移动方向，相机固定俯拍。
 	AAuraCharacter();
+	// 服务器端的InitAbilityActorInfo
 	virtual void PossessedBy(AController* NewController) override;
+	// 客户端的InitAbilityActorInfo
 	virtual void OnRep_PlayerState() override;
 	
 	// Combat Interface

@@ -8,6 +8,7 @@
 #include "UI/Widget/AuraUserWidget.h"
 #include "OverlayWidgetController.generated.h"
 
+// 道具拾取时的提示UI
 USTRUCT(BlueprintType)
 struct FUIWidgetRow : public FTableRowBase
 {
@@ -37,7 +38,9 @@ class AURA_API UOverlayWidgetController : public UAuraWidgetController
 {
 	GENERATED_BODY()
 public:
+	// 广播属性初始值
 	virtual void BroadcastInitialValues() override;
+	// 广播属性变化
 	virtual void BindCallbacksToDependencies() override;
 
 	UPROPERTY(BlueprintAssignable, Category="GAS|Attributes")
@@ -59,7 +62,6 @@ protected:
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Widget Data")
 	TObjectPtr<UDataTable> MessageWidgetDataTable;
-	
 	
 	template<typename T>
 	T* GetDataTableRowByTag(UDataTable* DataTable, const FGameplayTag& Tag);

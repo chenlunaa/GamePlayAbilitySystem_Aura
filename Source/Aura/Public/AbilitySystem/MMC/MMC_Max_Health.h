@@ -20,5 +20,6 @@ public:
 	
 private:
 	
+	// 定义要捕获的属性
 	FGameplayEffectAttributeCaptureDefinition VigorDef;
 };

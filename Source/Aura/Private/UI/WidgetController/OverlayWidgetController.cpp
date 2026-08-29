@@ -21,7 +21,7 @@ void UOverlayWidgetController::BindCallbacksToDependencies()
 
 	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(
 		AuraAttributeSet->GetHealthAttribute()).AddLambda(
-		[this](const FOnAttributeChangeData& Data)
+		[this](const FOnAttributeChangeData& Data)// Data是这个委托的数据
 			{
 				OnHealthChange.Broadcast(Data.NewValue);
 			}	
