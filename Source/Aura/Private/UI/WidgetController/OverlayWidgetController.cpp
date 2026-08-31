@@ -5,6 +5,7 @@
 #include <AbilitySystem/AuraAttributeSet.h>
 
 #include "AbilitySystem/AuraAbilitySystemComponent.h"
+#include "AbilitySystem/Data/AbilityInfo.h"
 
 void UOverlayWidgetController::BroadcastInitialValues()
 {
@@ -51,23 +52,51 @@ void UOverlayWidgetController::BindCallbacksToDependencies()
 			}
 		);
 	
-	// Lambda匿名函数表达,适合简单的函数，可以省略在.h文件中写成员函数
-	// []内填要引用的文件，否则无法使用成员函数,()内是参数传递,{}内是函数体
-	Cast<UAuraAbilitySystemComponent>(AbilitySystemComponent)->EffectAssetTags.AddLambda(
-		[this](const FGameplayTagContainer& AssetTag)
+	if (UAuraAbilitySystemComponent* AuraASC = Cast<UAuraAbilitySystemComponent>(AbilitySystemComponent))
+	{
+		if (AuraASC->bStartupAbilities)
 		{
-			// 获取一个GE的所有的Tag
-			for (const FGameplayTag& Tag : AssetTag)
+			OnInitializeStartupAbilities(AuraASC);
+		}
+		else
+		{
+			AuraASC->AbilitiesGivenDelegate.AddUObject(this, &UOverlayWidgetController::OnInitializeStartupAbilities);
+		}
+		
+		// Lambda匿名函数表达,适合简单的函数，可以省略在.h文件中写成员函数
+		// []内填要引用的文件，否则无法使用成员函数,()内是参数传递,{}内是函数体
+		AuraASC->EffectAssetTags.AddLambda(
+			[this](const FGameplayTagContainer& AssetTag)
 			{
-				// MatchesTag 用更深层的Tag去匹配时可以返回True，相反，根节点匹配子节点返回False
-				FGameplayTag MessageTag = FGameplayTag::RequestGameplayTag(FName("Message"));
-				if (Tag.MatchesTag(MessageTag))
+				// 获取一个GE的所有的Tag
+				for (const FGameplayTag& Tag : AssetTag)
 				{
-					// 获得具体的Tag所对应的Message
-					const FUIWidgetRow* Row = GetDataTableRowByTag<FUIWidgetRow>(MessageWidgetDataTable, Tag);
-					MessageWidgetRowDelegate.Broadcast(*Row);
+					// MatchesTag 用更深层的Tag去匹配时可以返回True，相反，根节点匹配子节点返回False
+					FGameplayTag MessageTag = FGameplayTag::RequestGameplayTag(FName("Message"));
+					if (Tag.MatchesTag(MessageTag))
+					{
+						// 获得具体的Tag所对应的Message
+						const FUIWidgetRow* Row = GetDataTableRowByTag<FUIWidgetRow>(MessageWidgetDataTable, Tag);
+						MessageWidgetRowDelegate.Broadcast(*Row);
+					}
 				}
-			}
-		}		
-	);
+			}		
+		);
+	}
+}
+
+// 确定每个Ability对应的按键是哪个
+void UOverlayWidgetController::OnInitializeStartupAbilities(UAuraAbilitySystemComponent* AuraAbilitySystemComponent)
+{
+	if (!AuraAbilitySystemComponent->bStartupAbilities) return;
+	
+	FForEachAbility BroadcastDelegate;
+	BroadcastDelegate.BindLambda([this, AuraAbilitySystemComponent](const FGameplayAbilitySpec& AbilitySpec)
+	{
+		FAuraAbilityInfo Info = AbilityInfo->FindAbilityInfoForTag(AuraAbilitySystemComponent->GetAbilityTagFromSpec(AbilitySpec));
+		Info.InputTag = AuraAbilitySystemComponent->GetInputTagFromSpec(AbilitySpec);
+		AbilityInfoDelegate.Broadcast(Info);
+	});
+	
+	AuraAbilitySystemComponent->ForEachAbility(BroadcastDelegate);
 }

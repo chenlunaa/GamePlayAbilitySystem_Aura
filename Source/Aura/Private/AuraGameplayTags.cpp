@@ -161,7 +161,9 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 		FName("Attributes.Resistance.Physical"), 
 		FString("Resistance to Physical Damage")
 		);
-	
+	/*
+	 * Ability
+	 */
 	GameplayTags.Abilities_Attack = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("Abilities.Attack"), 
 		FString("Attack Ability Tag")
@@ -172,6 +174,14 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 		FString("Summon Ability Tag")
 		);
 	
+	GameplayTags.Abilities_Fire_FireBolt = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Fire.FireBolt"), 
+		FString("FireBolt Ability Tag")
+		);
+	
+	/*
+	 * Weapon
+	 */
 	GameplayTags.CombatSocket_Weapon = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("CombatSocket.Weapon"), 
 		FString("Weapon")
