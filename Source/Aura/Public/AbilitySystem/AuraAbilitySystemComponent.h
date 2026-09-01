@@ -27,6 +27,7 @@ public:
 	FAbilityGiven AbilitiesGivenDelegate;
 	
 	void AddCharacterAbilities(const TArray<TSubclassOf<UGameplayAbility>>& StartupAbilities);
+	void AddCharacterPassiveAbilities(const TArray<TSubclassOf<UGameplayAbility>>& StartupPassiveAbilities);
 	bool bStartupAbilities = false;
 	
 	// 对于还没有激活的能力尝试激活
