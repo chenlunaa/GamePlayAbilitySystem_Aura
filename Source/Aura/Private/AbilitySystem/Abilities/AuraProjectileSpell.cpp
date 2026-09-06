@@ -9,6 +9,16 @@
 #include "Interaction/CombatInterface.h"
 #include "Aura/Public/AuraGameplayTags.h"
 
+FString UAuraProjectileSpell::GetDescription(int32 Level)
+{
+	return Super::GetDescription(Level);
+}
+
+FString UAuraProjectileSpell::GetNextLevel(int32 Level)
+{
+	return Super::GetNextLevel(Level);
+}
+
 void UAuraProjectileSpell::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
                                            const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
                                            const FGameplayEventData* TriggerEventData)

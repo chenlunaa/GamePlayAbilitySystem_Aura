@@ -46,7 +46,7 @@ struct AuraDamageStatics
 		TagsToCaptureDef.Add(FAuraGameplayTags::Get().Attribute_Secondary_CriticalHitChance, CriticalHitChanceDef);
 		TagsToCaptureDef.Add(FAuraGameplayTags::Get().Attribute_Secondary_CriticalHitDamage, CriticalHitDamageDef);
 		TagsToCaptureDef.Add(FAuraGameplayTags::Get().Attribute_Resistance_Fire, ResistanceFireDef);
-		TagsToCaptureDef.Add(FAuraGameplayTags::Get().Attribute_Resistance_Lighting, ResistanceLightingDef);
+		TagsToCaptureDef.Add(FAuraGameplayTags::Get().Attribute_Resistance_Lightning, ResistanceLightingDef);
 		TagsToCaptureDef.Add(FAuraGameplayTags::Get().Attribute_Resistance_Arcane, ResistanceArcaneDef);
 		TagsToCaptureDef.Add(FAuraGameplayTags::Get().Attribute_Resistance_Physical, ResistancePhysicalDef);
 	}

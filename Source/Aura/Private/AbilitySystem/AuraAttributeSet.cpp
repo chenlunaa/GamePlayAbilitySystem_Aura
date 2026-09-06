@@ -35,7 +35,7 @@ UAuraAttributeSet::UAuraAttributeSet()
 	TagsToAttribute.Add(GameplayTags.Attribute_Secondary_MaxHealth, GetMaxHealthAttribute);
 	TagsToAttribute.Add(GameplayTags.Attribute_Secondary_MaxMana, GetMaxManaAttribute);
 	TagsToAttribute.Add(GameplayTags.Attribute_Resistance_Fire, GetResistanceFireAttribute);
-	TagsToAttribute.Add(GameplayTags.Attribute_Resistance_Lighting, GetResistanceLightingAttribute);
+	TagsToAttribute.Add(GameplayTags.Attribute_Resistance_Lightning, GetResistanceLightingAttribute);
 	TagsToAttribute.Add(GameplayTags.Attribute_Resistance_Arcane, GetResistanceArcaneAttribute);
 	TagsToAttribute.Add(GameplayTags.Attribute_Resistance_Physical, GetResistancePhysicalAttribute);
 }
@@ -199,14 +199,18 @@ void UAuraAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallba
 			
 			while (NumberOfLevelUps > 0)
 			{
-				const int32 AttributePintsReward = IPlayerInterface::Execute_GetAttributePointsReward(Props.SourceCharacter, ++CurrentLevel);
-				const int32 SpellPointsReward = IPlayerInterface::Execute_GetSpellPointsReward(Props.SourceCharacter, ++CurrentLevel);
+				bUpdateHealth = true;
+				bUpdateMana = true;
+				
+				const int32 AttributePintsReward = IPlayerInterface::Execute_GetAttributePointsReward(Props.SourceCharacter, CurrentLevel);
+				const int32 SpellPointsReward = IPlayerInterface::Execute_GetSpellPointsReward(Props.SourceCharacter, CurrentLevel);
+				CurrentLevel++;
 				
 				IPlayerInterface::Execute_AddToPlayerLevel(Props.SourceCharacter, 1);
 				IPlayerInterface::Execute_AddToAttributePoints(Props.SourceCharacter, AttributePintsReward);
 				IPlayerInterface::Execute_AddToSpellPoints(Props.SourceCharacter, SpellPointsReward);
 				
-				SetHealth(GetMaxHealth());
+				
 				SetMana(GetMaxMana());
 				
 				IPlayerInterface::Execute_LevelUp(Props.SourceCharacter);
@@ -214,6 +218,22 @@ void UAuraAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallba
 			}
 			IPlayerInterface::Execute_AddToXP(Props.SourceCharacter, LocalIncomingXP);
 		}
+	}
+}
+
+void UAuraAttributeSet::PostAttributeChange(const FGameplayAttribute& Attribute, float OldValue, float NewValue)
+{
+	Super::PostAttributeChange(Attribute, OldValue, NewValue);
+	
+	if (Attribute == GetMaxHealthAttribute() && bUpdateHealth)
+	{
+		SetHealth(NewValue);
+		bUpdateHealth = false;
+	}
+	if (Attribute == GetMaxManaAttribute() && bUpdateMana)
+	{
+		SetMana(NewValue);
+		bUpdateMana = false;
 	}
 }
 
