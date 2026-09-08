@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "GameplayEffectTypes.h"
+#include  "AuraAbilityTypes.h"
 #include "AuraProjectile.generated.h"
 
 class UNiagaraSystem;
@@ -23,10 +23,11 @@ public:
 	TObjectPtr<UProjectileMovementComponent> ProjectileMovement;
 	
 	UPROPERTY(BlueprintReadWrite, meta = (ExposeOnSpawn = true))
-	FGameplayEffectSpecHandle DamageEffectSpecHandle;
+	FDamageEffectParams DamageEffectParams;
 	
 protected:
 	virtual void BeginPlay() override;
+	void OnHit();
 	virtual void Destroyed() override;
 	
 	// 参数由 Sphere 对应的碰撞组件 UPrimitiveComponent 在检测到重叠时传递。
