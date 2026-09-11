@@ -90,12 +90,17 @@ public:
 	FGameplayTag Montage_Attack_1;
 	FGameplayTag Montage_Attack_2;
 	FGameplayTag Montage_Attack_3;
-	FGameplayTag Montage_Attack_4;
+	FGameplayTag Montage_Attack_4; 
 	
 	TMap<FGameplayTag, FGameplayTag> DamageTypesToResistance;
 	TMap<FGameplayTag, FGameplayTag> DamageTypesToDebuffs;
 	
 	FGameplayTag Effects_HitReact;
+	
+	FGameplayTag Player_Block_InputPressed;
+	FGameplayTag Player_Block_InputHeld;
+	FGameplayTag Player_Block_InputReleased;
+	FGameplayTag Player_Block_CursorTrace;
 private:
 	static FAuraGameplayTags GameplayTags;
 };

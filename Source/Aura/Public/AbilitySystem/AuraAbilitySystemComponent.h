@@ -35,6 +35,7 @@ public:
 	bool bStartupAbilities = false;
 	
 	// 对于还没有激活的能力尝试激活
+	void AbilityInputTagPressed(const FGameplayTag& InputTag);
 	void AbilityInputTagHeld(const FGameplayTag& InputTag);
 	void AbilityInputTagReleased(const FGameplayTag& InputTag);
 	void ForEachAbility(const FForEachAbility& Delegate);

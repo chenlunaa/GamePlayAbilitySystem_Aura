@@ -358,6 +358,30 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 		FName("Effects.HitReact"), 
 	FString("Tag Granted When Hit Reacting")
 		);
+	
+	/*
+	 * 阻止输入
+	 */
+	
+	GameplayTags.Player_Block_InputPressed = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Player.Block.InputPressed"), 
+	FString("Block InputPressed")
+		);
+	
+	GameplayTags.Player_Block_InputHeld = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Player.Block.InputHeld"), 
+	FString("Block InputHeld")
+		);
+	
+	GameplayTags.Player_Block_InputReleased = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Player.Block.InputReleased"), 
+	FString("Block InputReleased ")
+		);
+	
+	GameplayTags.Player_Block_CursorTrace = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Player.Block.CursorTrace"), 
+	FString("Block CursorTrace")
+		);
 }
 
 

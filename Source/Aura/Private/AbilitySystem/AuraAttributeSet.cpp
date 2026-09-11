@@ -162,7 +162,7 @@ void UAuraAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallba
 	
 	if (Data.EvaluatedData.Attribute == GetIncomingDamageAttribute())
 	{
-		HandleIncomingDamage(Props);
+		HandleIncomingDamage(Props, Data);
 	}
 	
 	if (Data.EvaluatedData.Attribute == GetIncomingXPAttribute())
@@ -171,7 +171,7 @@ void UAuraAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallba
 	}
 }
 
-void UAuraAttributeSet::HandleIncomingDamage(const FEffectProperties& Props)
+void UAuraAttributeSet::HandleIncomingDamage(const FEffectProperties& Props, const FGameplayEffectModCallbackData& Data)
 {
 	const float LocalIncomingDamage = GetIncomingDamage();
 	SetIncomingDamage(0.f);
@@ -193,9 +193,15 @@ void UAuraAttributeSet::HandleIncomingDamage(const FEffectProperties& Props)
 		}
 		else
 		{
-			FGameplayTagContainer TagContainer;
-			TagContainer.AddTag(FAuraGameplayTags::Get().Effects_HitReact);
-			Props.TargetASC->TryActivateAbilitiesByTag(TagContainer);
+			const bool IsBurn = Data.EffectSpec.GetDynamicAssetTags().HasTagExact(FAuraGameplayTags::Get().Debuff_Burn);
+			const bool IsNotBeingShock = Props.TargetCharacter->Implements<UCombatInterface>() && !ICombatInterface::Execute_IsBeingShockLoop(Props.TargetCharacter);	
+			
+			if (!IsBurn && IsNotBeingShock)
+			{
+				FGameplayTagContainer TagContainer;
+				TagContainer.AddTag(FAuraGameplayTags::Get().Effects_HitReact);
+				Props.TargetASC->TryActivateAbilitiesByTag(TagContainer);
+			}
 			
 			const FVector KnockForce = UAuraAbilitySystemLibrary::GetKnockbackForce(Props.EffectContextHandle);
 			if (!KnockForce.IsNearlyZero(1.f))
@@ -282,6 +288,7 @@ void UAuraAttributeSet::Debuff(const FEffectProperties& Props)
 	
 	ModifierInfo.ModifierMagnitude = FScalableFloat(DebuffDamage);
 	ModifierInfo.ModifierOp = EGameplayModOp::Additive;
+	
 	ModifierInfo.Attribute = UAuraAttributeSet::GetIncomingDamageAttribute();
 
 	FGameplayEffectSpec* MutableSpec = new FGameplayEffectSpec(Effect, EffectContext, 1.f);
@@ -291,7 +298,21 @@ void UAuraAttributeSet::Debuff(const FEffectProperties& Props)
 		FAuraGameplayEffectContext* AuraContext = static_cast<FAuraGameplayEffectContext*>(MutableSpec->GetContext().Get());
 		TSharedPtr<FGameplayTag> DebuffDamageType = MakeShareable(new FGameplayTag(DamageType));
 		AuraContext->SetDamageType(DebuffDamageType);
+		
+		/*
+		 * 为这个Effect注入Tag来标志该Effect
+		 */
+		if (DebuffTag.MatchesTagExact(GameplayTags.Debuff_Stun))
+		{
+			MutableSpec->DynamicGrantedTags.AddTag(GameplayTags.Player_Block_CursorTrace);
+			MutableSpec->DynamicGrantedTags.AddTag(GameplayTags.Player_Block_InputHeld);
+			MutableSpec->DynamicGrantedTags.AddTag(GameplayTags.Player_Block_InputPressed);
+			MutableSpec->DynamicGrantedTags.AddTag(GameplayTags.Player_Block_InputReleased);
+		}
+		
 		MutableSpec->DynamicGrantedTags.AddTag(DebuffTag);
+		MutableSpec->AddDynamicAssetTag(DebuffTag);
+		
 		Props.TargetASC->ApplyGameplayEffectSpecToSelf(*MutableSpec);
 	}
 	

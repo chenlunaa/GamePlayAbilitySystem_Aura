@@ -3,6 +3,8 @@
 
 #include "AbilitySystem/AuraAbilitySystemLibrary.h"
 
+#include <Programs/UnrealBuildAccelerator/Core/Public/UbaBase.h>
+
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
 #include "AuraAbilityTypes.h"
@@ -327,6 +329,56 @@ void UAuraAbilitySystemLibrary::GetLivePlayerWithinRadius(const UObject* WorldCo
 	}
 }
 
+void UAuraAbilitySystemLibrary::GetClosestTarget(int32 MaxTarget, const TArray<AActor*>& Actor,
+	TArray<AActor*>& OutClosestTargets, const FVector& Origin)
+{
+	if (Actor.Num() <= MaxTarget)
+	{
+		OutClosestTargets = Actor;
+		return;
+	}
+	
+	// TArray<AActor*> ActorToCheck = Actor;
+	// int32 NumTargetsFound = 0;
+	//
+	// while (NumTargetsFound < MaxTarget)
+	// {
+	// 	double ClosestDistance = TNumericLimits<double>::Max();
+	// 	AActor* ClosestActor;
+	// 	for (AActor* PotentialTarget : ActorToCheck)
+	// 	{
+	// 		const double Distance = (PotentialTarget->GetActorLocation() - Origin).Length();
+	// 		if (Distance < ClosestDistance)
+	// 		{
+	// 			ClosestDistance = Distance;
+	// 			ClosestActor = PotentialTarget;
+	// 		}
+	// 	}
+	// 	ActorToCheck.Remove(ClosestActor);
+	// 	OutClosestTargets.AddUnique(ClosestActor);
+	// 	NumTargetsFound++;
+	// }
+	
+	TArray<TPair<AActor*, double>> ActorsToDistance;
+	for (AActor* PotentialTarget : Actor)
+	{
+		if (!IsValid(PotentialTarget)) continue;
+		double Distance = (PotentialTarget->GetActorLocation() - Origin).Length();
+		ActorsToDistance.Emplace(PotentialTarget, Distance);
+	}
+	ActorsToDistance.Sort([](const TPair<AActor*, double>& A, const TPair<AActor*, double>& B)
+	{
+		return A.Value < B.Value;
+	});
+	
+	int32 Target = FMath::Min(ActorsToDistance.Num(), MaxTarget);
+	
+	for (int i = 0; i < Target; i++)
+	{
+		OutClosestTargets.AddUnique(ActorsToDistance[i].Key);
+	}
+}
+
 bool UAuraAbilitySystemLibrary::IsNotFriend(AActor* FirstActor, AActor* SecondActor)
 {
 	const bool bFirstIsPlayer = FirstActor->ActorHasTag(FName("Player"));
@@ -362,6 +414,48 @@ FGameplayEffectContextHandle UAuraAbilitySystemLibrary::ApplyDamageEffect(const 
 	
 	DamageEffectParams.TargetAbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
 	return EffectContextHandle;
+}
+
+TArray<FRotator> UAuraAbilitySystemLibrary::EvenlySpacedRotators(const FVector& Forward, const FVector& Axis, float Spread, int32 NumRotators)
+{
+	TArray<FRotator> Rotators;
+	
+	const FVector RightOfSpread = Forward.RotateAngleAxis(Spread / 2.f, Axis);
+	if (NumRotators > 1)
+	{
+		const float DeltaSpread = Spread / (NumRotators - 1);
+		for (int32 i = 0; i < NumRotators; i++)
+		{
+			const FVector Direction = RightOfSpread.RotateAngleAxis(DeltaSpread * i, FVector::DownVector);
+			Rotators.Add(Direction.Rotation());
+		}
+	}
+	else
+	{
+		Rotators.Add(Forward.Rotation());
+	}
+	return Rotators;
+}
+
+TArray<FVector> UAuraAbilitySystemLibrary::EvenlyRotatedVectors(const FVector& Forward, const FVector& Axis, float Spread, int32 NumVectors)
+{
+	TArray<FVector> FVectors;
+	
+	const FVector RightOfSpread = Forward.RotateAngleAxis(Spread / 2.f, Axis);
+	if (NumVectors > 1)
+	{
+		const float DeltaSpread = Spread / (NumVectors - 1);
+		for (int32 i = 0; i < NumVectors; i++)
+		{
+			const FVector Direction = RightOfSpread.RotateAngleAxis(DeltaSpread * i, FVector::DownVector);
+			FVectors.Add(Direction);
+		}
+	}
+	else
+	{
+		FVectors.Add(Forward);
+	}
+	return FVectors;
 }
 
 int32 UAuraAbilitySystemLibrary::GetXPRewardForClassAndLevel(const UObject* WorldContextObject,
