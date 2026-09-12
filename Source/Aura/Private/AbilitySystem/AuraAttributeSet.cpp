@@ -247,9 +247,6 @@ void UAuraAttributeSet::HandleIncomingXP(const FEffectProperties& Props)
 			IPlayerInterface::Execute_AddToAttributePoints(Props.SourceCharacter, AttributePintsReward);
 			IPlayerInterface::Execute_AddToSpellPoints(Props.SourceCharacter, SpellPointsReward);
 				
-				
-			SetMana(GetMaxMana());
-				
 			IPlayerInterface::Execute_LevelUp(Props.SourceCharacter);
 			NumberOfLevelUps--;
 		}
