@@ -223,6 +223,7 @@ FGameplayAbilitySpec* UAuraAbilitySystemComponent::GetSpecFromAbilityTag(const F
 	FScopedAbilityListLock ActiveScopedLoc(*this);
 	for (FGameplayAbilitySpec& AbilitySpec : GetActivatableAbilities())
 	{
+		if (AbilitySpec.Ability == nullptr) continue;
 		for (FGameplayTag Tag : AbilitySpec.Ability.Get()->GetAssetTags())
 		{
 			if (AbilityTag.MatchesTag(Tag))
@@ -263,10 +264,18 @@ void UAuraAbilitySystemComponent::UpdateAbilityStatus(int32 Level)
 	UAbilityInfo* AbilityInfo = UAuraAbilitySystemLibrary::GetAbilityInfo(GetAvatarActor());
 	for (const FAuraAbilityInfo& Info : AbilityInfo->AbilityInformation)
 	{
+		// 数据表里若存在空条目,会生成一个连Ability都为空的Spec,后面遍历时还有空指针风险
+		if (!Info.AbilityTag.IsValid() || Info.Ability == nullptr) continue;
+		
 		if (Level >= Info.LevelRequirements && GetSpecFromAbilityTag(Info.AbilityTag) == nullptr)
 		{
 			FGameplayAbilitySpec AbilitySpec = FGameplayAbilitySpec(Info.Ability, 1);
 			AbilitySpec.GetDynamicSpecSourceTags().AddTag(FAuraGameplayTags::Get().Abilities_Status_Eligible);
+			UE_LOG(LogTemp, Warning,
+				TEXT("Grant: LookupTag=%s Class=%s ActualTag=%s"),
+				*Info.AbilityTag.ToString(),
+				*GetNameSafe(Info.Ability.Get()),
+				*GetAbilityTagFromSpec(AbilitySpec).ToString());
 			GiveAbility(AbilitySpec);
 			// 标记立刻生效
 			ClientUpdateAbilityStatus(Info.AbilityTag, FAuraGameplayTags::Get().Abilities_Status_Eligible, 1);
@@ -344,7 +353,7 @@ void UAuraAbilitySystemComponent::ServerEquipAbility_Implementation(const FGamep
 	if (FGameplayAbilitySpec* AbilitySpec = GetSpecFromAbilityTag(AbilityTag))
 	{
 		const FGameplayTag& PreSlot = GetInputTagFromSpec(*AbilitySpec);
-		const FGameplayTag& Status = GetStatusFromSpec(*AbilitySpec);
+		const FGameplayTag Status = GetStatusFromSpec(*AbilitySpec);
 		
 		// 完全不信任前端，只信任数据
 		const bool bStatusValid = Status.MatchesTagExact(GameplayTags.Abilities_Status_Equipped) || Status.MatchesTagExact(GameplayTags.Abilities_Status_Unlocked);
@@ -379,11 +388,20 @@ void UAuraAbilitySystemComponent::ServerEquipAbility_Implementation(const FGamep
 					TryActivateAbility(AbilitySpec->Handle);
 				}
 			}
+
+			// ClientEquipAbility only updates the current UI. Persist the equipped state
+			// on the authoritative spec so reopening the menu reads the same value.
+			if (Status.MatchesTagExact(GameplayTags.Abilities_Status_Unlocked))
+			{
+				AbilitySpec->GetDynamicSpecSourceTags().RemoveTag(GameplayTags.Abilities_Status_Unlocked);
+				AbilitySpec->GetDynamicSpecSourceTags().AddTag(GameplayTags.Abilities_Status_Equipped);
+			}
+
 			AssignSlotToAbility(*AbilitySpec, Slot);
 			
 			MarkAbilitySpecDirty(*AbilitySpec);
+			ClientEquipAbility(AbilityTag, GameplayTags.Abilities_Status_Equipped, Slot, PreSlot);
 		}
-		ClientEquipAbility(AbilityTag, GameplayTags.Abilities_Status_Equipped, Slot, PreSlot);
 	}
 }
 

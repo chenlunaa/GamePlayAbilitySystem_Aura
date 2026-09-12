@@ -33,7 +33,13 @@ void UAuraWidgetController::BroadcastAbilityInfo()
 	FForEachAbility BroadcastDelegate;
 	BroadcastDelegate.BindLambda([this](const FGameplayAbilitySpec& AbilitySpec)
 	{
-		FAuraAbilityInfo Info = AbilityInfo->FindAbilityInfoForTag(GetAuraASC()->GetAbilityTagFromSpec(AbilitySpec));
+		// GA_ListenForEvent这类不在DA_AbilityInfo里的技能没有AbilityTags,
+		// FindAbilityInfoForTag会返回一个所有Tag都无效的默认结构体并报Error,
+		// 广播出去会让法球把状态当成Eligible(灰色),所以直接跳过
+		const FGameplayTag AbilityTag = GetAuraASC()->GetAbilityTagFromSpec(AbilitySpec);
+		FAuraAbilityInfo Info = AbilityInfo->FindAbilityInfoForTag(AbilityTag, false);
+		if (!Info.AbilityTag.IsValid()) return;
+		
 		Info.InputTag = GetAuraASC()->GetInputTagFromSpec(AbilitySpec);
 		Info.StatusTag = GetAuraASC()->GetStatusFromSpec(AbilitySpec);
 		AbilityInfoDelegate.Broadcast(Info);
