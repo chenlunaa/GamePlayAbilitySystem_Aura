@@ -11,8 +11,9 @@
 enum class ECharacterClass : uint8;
 class UNiagaraSystem;
 
-DECLARE_MULTICAST_DELEGATE_OneParam(FOnASCRegistered, UAbilitySystemComponent*);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnASCRegisteredSignature, UAbilitySystemComponent*);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnDeath, AActor*, DeadActor);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnDamageSignature, float DamageAmount);
 
 USTRUCT(BlueprintType)
 struct FTaggedMontage
@@ -87,8 +88,9 @@ public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	ECharacterClass GetCharacterClass();
 	
-	virtual FOnASCRegistered& GetOnASCRegisteredDelegate() = 0;
+	virtual FOnASCRegisteredSignature& GetOnASCRegisteredDelegate() = 0;
 	virtual FOnDeath& GetOnDeathDelegate() = 0;
+	virtual FOnDamageSignature& GetOnDamageSignatureDelegate() = 0;
 	
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
 	void SetInShockLoop(bool InShockLoop);

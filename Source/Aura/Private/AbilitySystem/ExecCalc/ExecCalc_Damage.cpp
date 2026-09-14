@@ -11,6 +11,7 @@
 #include "AbilitySystem/AuraAttributeSet.h"
 #include "AbilitySystem/Data/CharacterClassInfo.h"
 #include "Interaction/CombatInterface.h"
+#include "Kismet/GameplayStatics.h"
 
 struct AuraDamageStatics
 {
@@ -130,6 +131,7 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 	}
 	
 	const FGameplayEffectSpec& Spec = ExecutionParams.GetOwningSpec();
+	FGameplayEffectContextHandle EffectContextHandle = Spec.GetContext();
 	
 	const FGameplayTagContainer* SourceTag = Spec.CapturedSourceTags.GetAggregatedTags();
 	const FGameplayTagContainer* TargetTag = Spec.CapturedTargetTags.GetAggregatedTags();
@@ -155,11 +157,45 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 		
 		float DamageTypeValue = Spec.GetSetByCallerMagnitude(Pair.Key, false);
 		
+		if (DamageTypeValue <= 0.f)
+		{
+			continue;
+		}
+		
 		float Resistance = 0.f;
 		ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(CaptureDef, EvaluationParameters, Resistance);
 		Resistance = FMath::Clamp(Resistance, 0.f, 100.f);
 		
 		DamageTypeValue *= (100.f - Resistance) / 100.f; 
+		
+		/*
+		 * Radial Damage 还要继续削弱
+		 */
+		if (UAuraAbilitySystemLibrary::IsRadialDamage(EffectContextHandle))
+		{
+			// 同样的这里是TakeDamage的回调，也只是传递伤害的一部分，不会应用到IncomingDamage
+			if (ICombatInterface* CombatInterface = Cast<ICombatInterface>(TargetAvatar))
+			{
+				CombatInterface->GetOnDamageSignatureDelegate().AddLambda([&](const float DamageAmount)
+				{
+					DamageTypeValue = DamageAmount;
+				});
+			}
+			// 函数只负责计算伤害的削减，不负责实际应用伤害
+			UGameplayStatics::ApplyRadialDamageWithFalloff(
+				TargetAvatar,
+				DamageTypeValue,
+				0.f,
+				UAuraAbilitySystemLibrary::GetRadialDamageOrigin(EffectContextHandle),
+				UAuraAbilitySystemLibrary::GetRadialDamageInnerRadius(EffectContextHandle),
+				UAuraAbilitySystemLibrary::GetRadialDamageOuterRadius(EffectContextHandle),
+				1.f,
+				UDamageType::StaticClass(),
+				TArray<AActor*>(),
+				SourceAvatar,
+				nullptr
+				);
+		}
 		
 		Damage += DamageTypeValue;
 	}
@@ -187,7 +223,7 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 	// 格挡后伤害减半
 	const bool bBlocked = FMath::RandRange(1, 100) <= TargetBlockChance;
 	
-	FGameplayEffectContextHandle EffectContextHandle = Spec.GetContext();
+	
 	UAuraAbilitySystemLibrary::SetIsBlockedHit(EffectContextHandle, bBlocked);
 	
 	Damage = bBlocked ? Damage * 0.5f : Damage;

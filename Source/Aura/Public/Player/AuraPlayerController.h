@@ -8,6 +8,7 @@
 #include "GameplayTagContainer.h"
 #include "AuraPlayerController.generated.h"
 
+class AMagicCircle;
 class UNiagaraSystem;
 class UDamageTextComponent;
 class UAuraInputConfig;
@@ -33,6 +34,11 @@ public:
 	
 	UFUNCTION(Client, Reliable)
 	void ShowDamageNumber(float Damage, ACharacter* TargetCharacter,  bool bBlockedHit, bool bCriticalHit);
+	
+	UFUNCTION(BlueprintCallable)
+	void ShowMagicCircle(UMaterialInterface* DecalMaterial = nullptr);
+	UFUNCTION(BlueprintCallable)
+	void HideMagicCircle();
 protected:
 	virtual void BeginPlay() override; //当游戏开始、或者这个控制器被生成（Spawn）到世界中时，它会自动触发且仅触发一次。
 	// 重写了父类的BeginPlay函数，以便在游戏开始时执行一些特定的逻辑，比如设置输入映射上下文、显示鼠标光标等。
@@ -73,23 +79,35 @@ private:
 	
 	UAuraAbilitySystemComponent* GetASC();
 	
+	/*
+	 * 自动寻路机制
+	 */
 	FVector CachedDestination = FVector::ZeroVector;
 	float FollowTime = 0.f;
 	float ShortPressThreshold = 0.5f;
 	bool bAutoRunning = false;
 	bool bTargeting = false;
-	
 	UPROPERTY(EditDefaultsOnly)
 	float AutoRunAcceptanceRadius = 50.f;
-	
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<USplineComponent> Spline;
+	void AutoRun();
 	
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<UNiagaraSystem> ClickNiagaraSystem;
 	
-	void AutoRun();
 	
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UDamageTextComponent> DamageTextComponentClass;
+	
+	/*
+	 * MagicCircle技能
+	 */
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<AMagicCircle> MagicCircleClass;
+	
+	UPROPERTY()
+	TObjectPtr<AMagicCircle> MagicCircle;
+	
+	void UpdateMagicCircleLocation();
 };

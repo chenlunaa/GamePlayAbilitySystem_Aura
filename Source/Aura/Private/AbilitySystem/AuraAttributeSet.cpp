@@ -233,8 +233,15 @@ void UAuraAttributeSet::HandleIncomingXP(const FEffectProperties& Props)
 			
 		const int32 NewLevel = IPlayerInterface::Execute_FindLevelForXP(Props.SourceCharacter, CurrentXP + LocalIncomingXP);
 		int32 NumberOfLevelUps = NewLevel- CurrentLevel;
-		int32 NumberOfLevels = NumberOfLevelUps;
 			
+		if (NumberOfLevelUps > 0)
+		{
+			bUpdateHealth = true;
+			bUpdateMana = true;
+			IPlayerInterface::Execute_AddToPlayerLevel(Props.SourceCharacter, NumberOfLevelUps);
+			IPlayerInterface::Execute_LevelUp(Props.SourceCharacter);
+		}
+		
 		while (NumberOfLevelUps > 0)
 		{
 			const int32 AttributePintsReward = IPlayerInterface::Execute_GetAttributePointsReward(Props.SourceCharacter, CurrentLevel);
@@ -246,10 +253,6 @@ void UAuraAttributeSet::HandleIncomingXP(const FEffectProperties& Props)
 			
 			NumberOfLevelUps--;
 		}
-		bUpdateHealth = true;
-		bUpdateMana = true;
-		IPlayerInterface::Execute_AddToPlayerLevel(Props.SourceCharacter, NumberOfLevels);
-		IPlayerInterface::Execute_LevelUp(Props.SourceCharacter);
 		IPlayerInterface::Execute_AddToXP(Props.SourceCharacter, LocalIncomingXP);
 	}
 }

@@ -66,6 +66,14 @@ void AAuraCharacterBase::GetLifetimeReplicatedProps(TArray<class FLifetimeProper
 	DOREPLIFETIME(AAuraCharacterBase, bIsBeingShock);
 }
 
+float AAuraCharacterBase::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent,
+	class AController* EventInstigator, AActor* DamageCauser)
+{
+	const float DamageTaken =  Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+	OnDamageDelegate.Broadcast(DamageTaken);
+	return DamageTaken;
+}
+
 UAbilitySystemComponent* AAuraCharacterBase::GetAbilitySystemComponent() const
 {
 	return AbilitySystemComponent;
@@ -201,7 +209,7 @@ ECharacterClass AAuraCharacterBase::GetCharacterClass_Implementation()
 	return CharacterClass;
 }
 
-FOnASCRegistered& AAuraCharacterBase::GetOnASCRegisteredDelegate()
+FOnASCRegisteredSignature& AAuraCharacterBase::GetOnASCRegisteredDelegate()
 {
 	return OnAscRegistered;
 }
@@ -225,6 +233,11 @@ void AAuraCharacterBase::SetIsBeingShockLoop_Implementation(bool InShockLoop)
 bool AAuraCharacterBase::IsBeingShockLoop_Implementation() const
 {
 	return bIsBeingShock;
+}
+
+FOnDamageSignature& AAuraCharacterBase::GetOnDamageSignatureDelegate()
+{
+	return OnDamageDelegate;
 }
 
 void AAuraCharacterBase::InitAbilityActorInfo()

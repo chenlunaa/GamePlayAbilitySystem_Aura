@@ -6,6 +6,7 @@
 #include "UObject/Interface.h"
 #include "PlayerInterface.generated.h"
 
+class AMagicCircle;
 // This class does not need to be modified.
 UINTERFACE(MinimalAPI)
 class UPlayerInterface : public UInterface
@@ -55,4 +56,10 @@ public:
 	
 	UFUNCTION(BlueprintNativeEvent)
 	void LevelUp();
+	
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void ShowMagicCircle(UMaterialInterface* DecalMaterial);
+	
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void HideMagicCircle();
 };

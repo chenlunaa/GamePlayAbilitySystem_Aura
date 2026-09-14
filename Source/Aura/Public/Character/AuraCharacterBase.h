@@ -27,6 +27,7 @@ public:
 	
 	virtual void Tick(float DeltaSeconds) override;
 	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
+	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 	UAttributeSet* GetAttributeSet() const { return AttributeSet; }
 	
@@ -42,15 +43,17 @@ public:
 	virtual int32 GetMinionCount_Implementation() override;
 	virtual void IncrementMinionCount_Implementation(int32 Amount) override;
 	virtual ECharacterClass GetCharacterClass_Implementation() override;
-	virtual FOnASCRegistered& GetOnASCRegisteredDelegate() override;
+	virtual FOnASCRegisteredSignature& GetOnASCRegisteredDelegate() override;
 	virtual FOnDeath& GetOnDeathDelegate() override;
 	virtual USkeletalMeshComponent* GetWeapon_Implementation() override;
 	virtual void SetIsBeingShockLoop_Implementation(bool InShockLoop) override;
 	virtual bool IsBeingShockLoop_Implementation() const override;
+	virtual FOnDamageSignature& GetOnDamageSignatureDelegate() override;
 	// End
 	
-	FOnASCRegistered OnAscRegistered;
+	FOnASCRegisteredSignature OnAscRegistered;
 	FOnDeath OnDeathDelegate;
+	FOnDamageSignature OnDamageDelegate;
 	
 	UFUNCTION(NetMulticast, Reliable)
 	virtual void MulticastHandleDeath(const FVector& DeathImpulse);
