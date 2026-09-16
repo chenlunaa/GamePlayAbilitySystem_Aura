@@ -48,9 +48,9 @@ FDamageEffectParams UAuraDamageGameplayAbility::MakeDamageEffectParamsFromClassD
 		
 		if (!bOverrideKnockbackDirection)
 		{
-			Params.KnockbackForce = ToTarget * KnockbackDirectionOverride;
+			Params.KnockbackForce = ToTarget * KnockbackForceMagnitude;
 		}
-		if (bDeathImpulseOverride)
+		if (!bDeathImpulseOverride)
 		{
 			Params.DeathImpulse = ToTarget * DeathImpulseMagnitude;
 		}

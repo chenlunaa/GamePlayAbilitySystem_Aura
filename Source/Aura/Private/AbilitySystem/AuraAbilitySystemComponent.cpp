@@ -2,7 +2,6 @@
 
 
 #include "AbilitySystem/AuraAbilitySystemComponent.h"
-
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AuraGameplayTags.h"
 #include "AbilitySystem/AuraAbilitySystemLibrary.h"
@@ -271,11 +270,6 @@ void UAuraAbilitySystemComponent::UpdateAbilityStatus(int32 Level)
 		{
 			FGameplayAbilitySpec AbilitySpec = FGameplayAbilitySpec(Info.Ability, 1);
 			AbilitySpec.GetDynamicSpecSourceTags().AddTag(FAuraGameplayTags::Get().Abilities_Status_Eligible);
-			UE_LOG(LogTemp, Warning,
-				TEXT("Grant: LookupTag=%s Class=%s ActualTag=%s"),
-				*Info.AbilityTag.ToString(),
-				*GetNameSafe(Info.Ability.Get()),
-				*GetAbilityTagFromSpec(AbilitySpec).ToString());
 			GiveAbility(AbilitySpec);
 			// 标记立刻生效
 			ClientUpdateAbilityStatus(Info.AbilityTag, FAuraGameplayTags::Get().Abilities_Status_Eligible, 1);
@@ -388,9 +382,7 @@ void UAuraAbilitySystemComponent::ServerEquipAbility_Implementation(const FGamep
 					TryActivateAbility(AbilitySpec->Handle);
 				}
 			}
-
-			// ClientEquipAbility only updates the current UI. Persist the equipped state
-			// on the authoritative spec so reopening the menu reads the same value.
+			
 			if (Status.MatchesTagExact(GameplayTags.Abilities_Status_Unlocked))
 			{
 				AbilitySpec->GetDynamicSpecSourceTags().RemoveTag(GameplayTags.Abilities_Status_Unlocked);
