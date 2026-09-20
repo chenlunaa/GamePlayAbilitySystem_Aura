@@ -57,7 +57,7 @@ TArray<AAuraFireBall*> UAuraFireBlast::SpawnFireBalls()
 	TArray<AAuraFireBall*> FireBalls;
 	const FVector Forward = GetAvatarActorFromActorInfo()->GetActorForwardVector();
 	const FVector Location = GetAvatarActorFromActorInfo()->GetActorLocation();
-	TArray<FRotator> Rotators = UAuraAbilitySystemLibrary::EvenlySpacedRotators(Forward, FVector::UpVector, 360.f, MaxNumFireBolls);
+	TArray<FRotator> Rotators = UAuraAbilitySystemLibrary::EvenlySpacedRotators(Forward, FVector::UpVector, 330.f, MaxNumFireBolls);
 	
 	for (const FRotator& Rotator : Rotators)
 	{
