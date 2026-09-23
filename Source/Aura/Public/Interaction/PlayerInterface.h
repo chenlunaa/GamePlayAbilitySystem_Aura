@@ -6,9 +6,10 @@
 #include "UObject/Interface.h"
 #include "PlayerInterface.generated.h"
 
+class AAuraPlayerController;
 class AMagicCircle;
 // This class does not need to be modified.
-UINTERFACE(MinimalAPI)
+UINTERFACE(MinimalAPI, BlueprintType)
 class UPlayerInterface : public UInterface
 {
 	GENERATED_BODY()
@@ -62,4 +63,7 @@ public:
 	
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void HideMagicCircle();
+	
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void SaveProgress(const FName& CheckPointTag);
 };

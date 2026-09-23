@@ -4,7 +4,6 @@
 #include "AbilitySystem/Abilities/AuraPassiveAbility.h"
 
 #include "AbilitySystemBlueprintLibrary.h"
-#include "GameplayAbilityBlueprint.h"
 #include "AbilitySystem/AuraAbilitySystemComponent.h"
 
 void UAuraPassiveAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle,

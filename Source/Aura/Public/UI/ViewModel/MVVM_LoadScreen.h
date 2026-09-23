@@ -44,21 +44,17 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void PlayButtonPressed();
 	
+	// 只负责加载Load界面所需要的数据
 	void LoadData();
 	
 	
 private:
-	
-	UPROPERTY()
-	TMap<int32, UMVVM_LoadSlot*> LoadSlots;
-	
-	UPROPERTY()
-	TObjectPtr<UMVVM_LoadSlot> LoadSlot_0;
-	UPROPERTY()
-	TObjectPtr<UMVVM_LoadSlot> LoadSlot_1;
-	UPROPERTY()
-	TObjectPtr<UMVVM_LoadSlot> LoadSlot_2;
-	
 	UPROPERTY()
 	UMVVM_LoadSlot* SelectedSlot;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Load Slots", meta = (ClampMin = "1"))
+	int32 NumLoadSlots = 9;
+
+	UPROPERTY(Transient)
+	TArray<TObjectPtr<UMVVM_LoadSlot>> LoadSlots;
 };

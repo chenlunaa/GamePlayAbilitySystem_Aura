@@ -12,6 +12,7 @@ class UAuraAbilitySystemComponent;
 class AAuraPlayerState;
 class AAuraPlayerController;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPlayerStatChangedSignature, int, NewValue);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnLevelChangedSignature, int, NewValue, bool, bLevelUp);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FAbilityInfoSignature, const FAuraAbilityInfo&, info);
 
 class UAbilitySystemComponent;

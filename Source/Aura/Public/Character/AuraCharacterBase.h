@@ -7,6 +7,7 @@
 #include "GameFramework/Character.h"
 #include "Interaction/CombatInterface.h"
 #include "AbilitySystem/Data/CharacterClassInfo.h"
+#include "Game/LoadScreenSaveGame.h"
 #include "AuraCharacterBase.generated.h"
 
 class UPassiveNiagaraComponent;
@@ -120,8 +121,12 @@ protected:
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Attributes")
 	TSubclassOf<UGameplayEffect> DefaultVitalAttributes;
 	
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Attributes")
+	TSubclassOf<UGameplayEffect> PrimaryAttributes_SetByCaller;
+	
 	void ApplyEffectToSelf(TSubclassOf<UGameplayEffect> GameplayEffectClass, float Level) const;
 	virtual void InitializeDefaultAttributes() const;
+	virtual void InitializeAttributesFromSaveData(ULoadScreenSaveGame* SaveGame) const;
 	
 	void AddCharacterAbilities();
 	

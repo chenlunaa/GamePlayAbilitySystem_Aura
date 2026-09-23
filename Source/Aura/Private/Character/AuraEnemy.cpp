@@ -159,7 +159,7 @@ void AAuraEnemy::InitAbilityActorInfo()
 
 void AAuraEnemy::InitializeDefaultAttributes() const
 {
-	UAuraAbilitySystemLibrary::InitializeDefaultAttributes(this, CharacterClass, Level, AbilitySystemComponent);
+	UAuraAbilitySystemLibrary::InitializeEnemyDefaultAttributes(this, CharacterClass, Level, AbilitySystemComponent);
 }
 
 void AAuraEnemy::StunTagChanged(const FGameplayTag CallbackTag, int32 NewCount)

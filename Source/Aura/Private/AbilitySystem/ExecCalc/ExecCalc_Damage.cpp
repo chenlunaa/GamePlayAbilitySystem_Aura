@@ -104,7 +104,7 @@ void UExecCalc_Damage::DetermineDebuff(const FGameplayEffectCustomExecutionParam
 				UAuraAbilitySystemLibrary::SetDebuffDamage(EffectContextHandle, SourceDebuffDamage);
 				UAuraAbilitySystemLibrary::SetDebuffDuration(EffectContextHandle, SourceDebuffDuration);
 				UAuraAbilitySystemLibrary::SetDebuffFrequency(EffectContextHandle, SourceDebuffFrequency);
-				UAuraAbilitySystemLibrary::SetDebuffDamageType(EffectContextHandle, DamageType);
+				UAuraAbilitySystemLibrary::SetDamageType(EffectContextHandle, DamageType);
 			}
 		}
 	}
@@ -163,6 +163,7 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 		}
 		
 		float Resistance = 0.f;
+		// 获取AttributeSet中的属性值
 		ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(CaptureDef, EvaluationParameters, Resistance);
 		Resistance = FMath::Clamp(Resistance, 0.f, 100.f);
 		

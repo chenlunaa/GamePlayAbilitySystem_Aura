@@ -8,12 +8,40 @@
 #include "AbilitySystem/Abilities/AuraGameplayAbility.h"
 #include "AbilitySystem/Data/AbilityInfo.h"
 #include "Aura/AuraLogChannels.h"
+#include "Game/LoadScreenSaveGame.h"
 #include "Interaction/PlayerInterface.h"
 
 void UAuraAbilitySystemComponent::AbilityActorInfoSet()
 {
 	OnGameplayEffectAppliedDelegateToSelf.AddUObject(this, &UAuraAbilitySystemComponent::ClientEffectApplied);
 	
+}
+
+void UAuraAbilitySystemComponent::AddCharacterAbilitiesFromSaveData(ULoadScreenSaveGame* SaveData)
+{
+	for (const FSavedAbility& Data: SaveData->SavedAbilities)
+	{
+		const TSubclassOf<UGameplayAbility> LoadedAbilityClass = Data.GameplayAbility;
+		
+		FGameplayAbilitySpec LoadedAbilitySpec = FGameplayAbilitySpec(LoadedAbilityClass, Data.AbilityLevel);
+		
+		LoadedAbilitySpec.GetDynamicSpecSourceTags().AddTag(Data.AbilitySlot);
+		LoadedAbilitySpec.GetDynamicSpecSourceTags().AddTag(Data.AbilityStatus);
+		if (Data.AbilityType.MatchesTagExact(FAuraGameplayTags::Get().Abilities_Type_Offensive))
+		{
+			GiveAbility(LoadedAbilitySpec);
+		}
+		else if (Data.AbilityType.MatchesTagExact(FAuraGameplayTags::Get().Abilities_Type_Passive))
+		{
+			GiveAbility(LoadedAbilitySpec);
+			if (Data.AbilityStatus.MatchesTagExact(FAuraGameplayTags::Get().Abilities_Status_Equipped))
+			{
+				TryActivateAbility(LoadedAbilitySpec.Handle);
+			}
+		}
+	}
+	bStartupAbilities = true;
+	AbilitiesGivenDelegate.Broadcast();
 }
 
 void UAuraAbilitySystemComponent::AddCharacterAbilities(const TArray<TSubclassOf<UGameplayAbility>>& StartupAbilities)
@@ -42,7 +70,9 @@ void UAuraAbilitySystemComponent::AddCharacterPassiveAbilities(
 	for (const TSubclassOf<UGameplayAbility> AbilityClass : StartupPassiveAbilities)
 	{
 		FGameplayAbilitySpec AbilitySpec = FGameplayAbilitySpec(AbilityClass, 1);
-		GiveAbilityAndActivateOnce(AbilitySpec);
+		AbilitySpec.GetDynamicSpecSourceTags().AddTag(FAuraGameplayTags::Get().Abilities_Status_Equipped);
+		GiveAbility(AbilitySpec);
+		TryActivateAbility(AbilitySpec.Handle);
 	}
 }
 
@@ -160,6 +190,19 @@ FGameplayTag UAuraAbilitySystemComponent::GetStatusFromSpec(const FGameplayAbili
 		if (StatusTag.MatchesTag(FGameplayTag::RequestGameplayTag(FName("Abilities.Status"))))
 		{
 			return StatusTag;
+		}
+	}
+	return FGameplayTag();
+}
+
+FGameplayTag UAuraAbilitySystemComponent::GetStatusFromAbilityTag(const FGameplayTag& AbilityTag)
+{
+	FScopedAbilityListLock ActiveScopedLoc(*this);
+	for (FGameplayAbilitySpec& AbilitySpec : GetActivatableAbilities())
+	{
+		if (GetAbilityTagFromSpec(AbilitySpec).MatchesTagExact(AbilityTag))
+		{
+			return GetStatusFromSpec(AbilitySpec);
 		}
 	}
 	return FGameplayTag();
@@ -367,6 +410,8 @@ void UAuraAbilitySystemComponent::ServerEquipAbility_Implementation(const FGamep
 					// 处理替换下来的PassiveAbility的逻辑
 					if (IsPassiveAbility(*SpecWithSlot))
 					{
+						SpecWithSlot->GetDynamicSpecSourceTags().RemoveTag(GetStatusFromSpec(*SpecWithSlot));
+						SpecWithSlot->GetDynamicSpecSourceTags().AddTag(GameplayTags.Abilities_Status_Unlocked);
 						MulticastActivatePassiveEffect(GetAbilityTagFromSpec(*SpecWithSlot), false);
 						DeactivatePassiveAbilityDelegate.Broadcast(GetAbilityTagFromSpec(*SpecWithSlot));
 					}
@@ -381,14 +426,10 @@ void UAuraAbilitySystemComponent::ServerEquipAbility_Implementation(const FGamep
 					MulticastActivatePassiveEffect(AbilityTag, true);
 					TryActivateAbility(AbilitySpec->Handle);
 				}
-			}
-			
-			if (Status.MatchesTagExact(GameplayTags.Abilities_Status_Unlocked))
-			{
-				AbilitySpec->GetDynamicSpecSourceTags().RemoveTag(GameplayTags.Abilities_Status_Unlocked);
+				AbilitySpec->GetDynamicSpecSourceTags().RemoveTag(GetStatusFromSpec(*AbilitySpec));
 				AbilitySpec->GetDynamicSpecSourceTags().AddTag(GameplayTags.Abilities_Status_Equipped);
 			}
-
+			
 			AssignSlotToAbility(*AbilitySpec, Slot);
 			
 			MarkAbilitySpecDirty(*AbilitySpec);

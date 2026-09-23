@@ -18,6 +18,7 @@ class IEnemyInterface;
 struct FInputActionValue;
 class UAuraAbilitySystemComponent;
 class USplineComponent;
+class IMutualInterface;
 
 /**
  * 
@@ -43,6 +44,12 @@ protected:
 	virtual void BeginPlay() override; //当游戏开始、或者这个控制器被生成（Spawn）到世界中时，它会自动触发且仅触发一次。
 	// 重写了父类的BeginPlay函数，以便在游戏开始时执行一些特定的逻辑，比如设置输入映射上下文、显示鼠标光标等。
 	virtual void SetupInputComponent() override;
+	
+	void FPressed();
+	void FReleased();
+
+	UFUNCTION(BlueprintPure, Category="Interaction")
+	AActor* GetCurrentMutualActor() const { return CurrentMutualActor; }
 
 // UPROPERTY(...)：虚幻引擎的属性宏。它把这个 C++ 变量注册到引擎的反射系统中，使其能被引擎识别。
 private:
@@ -53,13 +60,21 @@ private:
 	TObjectPtr<UInputAction> MoveAction; // 一个输入动作，通常对应IA_Move蓝图，设置值为Vec2D的那个
 	
 	UPROPERTY(EditAnywhere, Category="Input")
-	TObjectPtr<UInputAction> ShiftAction; 
+	TObjectPtr<UInputAction> ShiftAction;
+	
+	UPROPERTY(EditAnywhere, Category="Input")
+	TObjectPtr<UInputAction> FAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Interaction", meta=(AllowPrivateAccess="true", ClampMin="0.0"))
+	float MutualInteractionRadius = 200.f;
+
+	UPROPERTY(BlueprintReadOnly, Category="Interaction", meta=(AllowPrivateAccess="true"))
+	TObjectPtr<AActor> CurrentMutualActor;
 	
 	void ShiftPressed() {bShiftKeyDown = true;};
 	void ShiftReleased() {bShiftKeyDown = false;};
-	
 	bool bShiftKeyDown = false;
-
+	
 	void Move(const FInputActionValue& InputActionValue);// 回调函数，获得实际移动数据
 	//这是一个非常强大的数据包裹。无论玩家是用手柄摇杆（推多大距离产生多大的浮点数值）还是键盘（按下就是 1，松开就是 0），引擎都会把这些输入数据封装进 InputActionValue 中传给这个函数。
 	void CursorTrace();
@@ -87,8 +102,10 @@ private:
 	float ShortPressThreshold = 0.5f;
 	bool bAutoRunning = false;
 	bool bTargeting = false;
+	
 	UPROPERTY(EditDefaultsOnly)
 	float AutoRunAcceptanceRadius = 50.f;
+	
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<USplineComponent> Spline;
 	void AutoRun();

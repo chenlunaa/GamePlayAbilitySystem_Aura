@@ -12,16 +12,16 @@ FString UAuraFireBlast::GetDescription(int32 Level)
 	const float ManaCost = -GetManaCost(Level);
 	const float CoolDown = GetCoolDown(Level);
 	return FString::Printf(TEXT(
-		"<Title>FIRE BLAST</>\n\n"
+		"<Title>火焰爆发</>\n\n"
 		
-		"<Small>Level: </><Level>%d</>\n"
-		"<Small>ManaCost: </><ManaCost>%.1f</>\n"
-		"<Small>CoolDown: </><CoolDown>%.1f</>\n\n"
-		"<Default>Launches %d </>"
-		"<Default>fire balls in all direction, each coming back and </>"
-		"<Default>exploding upon return, causing </>"
+		"<Small>等级: </><Level>%d</>\n"
+		"<Small>魔力消耗: </><ManaCost>%.1f</>\n"
+		"<Small>冷却: </><CoolDown>%.1f</>\n\n"
+		"<Default>向四周发射 %d </>"
+		"<Default>枚火球, 每一个都会返回并且 </>"
+		"<Default>最后发生爆炸, 造成 </>"
 		"<Damage>%d</>"
-		"<Default> radial fire damage with a chance to burn.</>"),
+		"<Default> 点范围火焰伤害并且有一定概率触发燃烧.</>"),
 		Level,
 		ManaCost,
 		CoolDown,
@@ -35,16 +35,16 @@ FString UAuraFireBlast::GetNextLevel(int32 Level)
 	const float ManaCost = -GetManaCost(Level);
 	const float CoolDown = GetCoolDown(Level);
 	return FString::Printf(TEXT(
-		"<Title>NEXT LEVEL</>\n\n"
+		"<Title>升级效果</>\n\n"
 		
-		"<Small>Level: </><Level>%d</>\n"
-		"<Small>ManaCost: </><ManaCost>%.1f</>\n"
-		"<Small>CoolDown: </><CoolDown>%.1f</>\n\n"
-		"<Default>Launches %d </>"
-		"<Default>fire balls in all direction, each coming back and </>"
-		"<Default>exploding upon return, causing </>"
+		"<Small>等级: </><Level>%d</>\n"
+		"<Small>魔力消耗: </><ManaCost>%.1f</>\n"
+		"<Small>冷却: </><CoolDown>%.1f</>\n\n"
+		"<Default>向四周发射 %d </>"
+		"<Default>枚火球, 每一个都会返回并且 </>"
+		"<Default>最后发生爆炸, 造成 </>"
 		"<Damage>%d</>"
-		"<Default> fire damage with a chance to burn.</>"),
+		"<Default> 点范围火焰伤害并且有一定概率触发燃烧.</>"),
 		Level,
 		ManaCost,
 		CoolDown,
