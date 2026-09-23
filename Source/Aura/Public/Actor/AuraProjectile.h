@@ -58,6 +58,7 @@ protected:
 	
 	UPROPERTY()
 	TObjectPtr<UAudioComponent> LoopingSoundComponent;
+
 	
 private:
 	

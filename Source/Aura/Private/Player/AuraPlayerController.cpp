@@ -10,11 +10,13 @@
 #include "NavigationSystem.h"
 #include "NiagaraFunctionLibrary.h"
 #include "AbilitySystem/AuraAbilitySystemComponent.h"
+#include "AbilitySystem/AuraAbilitySystemLibrary.h"
 #include "Actor/MagicCircle.h"
 #include "Aura/Aura.h"
 #include "Components/DecalComponent.h"
 #include "Components/SplineComponent.h"
 #include "Input/AuraInputComponent.h"
+#include "Interaction/MutualInterface.h"
 #include "GameFramework/Character.h"
 #include "UI/Widget/DamageTextComponent.h"
 
@@ -202,16 +204,14 @@ void AAuraPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
 		{
 			if (UNavigationPath* NavPath = UNavigationSystemV1::FindPathToLocationSynchronously(this, ControllerPawn->GetActorLocation(), CachedDestination))
 			{
+				Spline->ClearSplinePoints();
+				for (const FVector& PointLoc : NavPath->PathPoints)
 				{
-					Spline->ClearSplinePoints();
-					for (const FVector& PointLoc : NavPath->PathPoints)
-					{
-						Spline->AddSplinePoint(PointLoc, ESplineCoordinateSpace::World);
-					}
-					if (NavPath->PathPoints.IsEmpty()) return;
-					CachedDestination = NavPath->PathPoints[NavPath->PathPoints.Num() - 1];
-					bAutoRunning = true;
+					Spline->AddSplinePoint(PointLoc, ESplineCoordinateSpace::World);
 				}
+				if (NavPath->PathPoints.IsEmpty()) return;
+				CachedDestination = NavPath->PathPoints[NavPath->PathPoints.Num() - 1];
+				bAutoRunning = true;		
 			}
 			if (GetASC() && !GetASC()->HasMatchingGameplayTag(FAuraGameplayTags::Get().Player_Block_InputPressed))
 			{
@@ -313,8 +313,56 @@ void AAuraPlayerController::SetupInputComponent()
 	AuraInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, & AAuraPlayerController::Move);
 	AuraInputComponent->BindAction(ShiftAction, ETriggerEvent::Started, this, & AAuraPlayerController::ShiftPressed);
 	AuraInputComponent->BindAction(ShiftAction, ETriggerEvent::Completed, this, & AAuraPlayerController::ShiftReleased);
+	AuraInputComponent->BindAction(FAction, ETriggerEvent::Started, this, & AAuraPlayerController::FPressed);
+	AuraInputComponent->BindAction(FAction, ETriggerEvent::Completed, this, & AAuraPlayerController::FReleased);
+	
 	AuraInputComponent->BindAbilityActions(InputConfig, this, &ThisClass::AbilityInputTagPressed, &ThisClass::AbilityInputTagReleased, &ThisClass::AbilityInputTagHeld);
 }
+
+void AAuraPlayerController::FPressed()
+{
+	CurrentMutualActor = nullptr;
+
+	APawn* ControlledPawn = GetPawn<APawn>();
+	if (!IsValid(ControlledPawn))
+	{
+		return;
+	}
+
+	TArray<AActor*> ActorsToIgnore;
+	ActorsToIgnore.Add(ControlledPawn);
+
+	TArray<AActor*> MutualActors;
+	UAuraAbilitySystemLibrary::GetMutualActorsWithinRadius(
+		this,
+		MutualActors,
+		ActorsToIgnore,
+		MutualInteractionRadius,
+		ControlledPawn->GetActorLocation());
+
+	TArray<AActor*> ClosestActors;
+	UAuraAbilitySystemLibrary::GetClosestTarget(
+		1,
+		MutualActors,
+		ClosestActors,
+		ControlledPawn->GetActorLocation());
+
+	if (ClosestActors.IsEmpty())
+	{
+		return;
+	}
+
+	CurrentMutualActor = ClosestActors[0];
+	if (IMutualInterface* MutualActor = Cast<IMutualInterface>(CurrentMutualActor))
+	{
+		MutualActor->ActivateMutual(ControlledPawn);
+	}
+}
+
+void AAuraPlayerController::FReleased()
+{
+}
+
 // 获取玩家输入的移动数据InputAxisVector，并根据当前玩家相机的旋转角度GetControlRotation计算出前后左右的移动方向，最后把这些移动输入应用到玩家控制的 Pawn 上。
 void AAuraPlayerController::Move(const FInputActionValue& InputActionValue)
 {

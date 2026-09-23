@@ -12,14 +12,14 @@ FString UArcaneShards::GetDescription(int32 Level)
 	if (Level == 1)
 	{
 		return FString::Printf(TEXT(
-			"<Title>ARCANE SHARDS</>\n\n"
+			"<Title>奥术突刺</>\n\n"
 			
-			"<Small>Level: </><Level>%d</>\n"
-			"<Small>ManaCost: </><ManaCost>%.1f</>\n"
-			"<Small>CoolDown: </><CoolDown>%.1f</>\n\n"
-			"<Default>Summon a shard of arcane energy causing radial arcane damage of </>"
+			"<Small>等级: </><Level>%d</>\n"
+			"<Small>魔力消耗: </><ManaCost>%.1f</>\n"
+			"<Small>冷却: </><CoolDown>%.1f</>\n\n"
+			"<Default>召唤一块奥术能量碎片, 在碎片周边范围性造成 </>"
 			"<Damage>%d</>"
-			"<Default> at the shard origin.</>"),
+			"<Default> 点奥术伤害.</>"),
 			Level,
 			ManaCost,
 			CoolDown,
@@ -28,14 +28,14 @@ FString UArcaneShards::GetDescription(int32 Level)
 	else
 	{
 		return FString::Printf(TEXT(
-			"<Title>ARCANE SHARDS</>\n\n"
+			"<Title>奥术突刺</>\n\n"
 			
-			"<Small>Level: </><Level>%d</>\n"
-			"<Small>ManaCost: </><ManaCost>%.1f</>\n"
-			"<Small>CoolDown: </><CoolDown>%.1f</>\n\n"
-			"<Default>Summon %d shards of arcane energy causing radial arcane damage of </>"
+			"<Small>等级: </><Level>%d</>\n"
+			"<Small>魔力消耗: </><ManaCost>%.1f</>\n"
+			"<Small>冷却: </><CoolDown>%.1f</>\n\n"
+			"<Default>召唤 %d 块奥术能量碎片, 在碎片周边范围性造成 </>"
 			"<Damage>%d</>"
-			"<Default> at the shard origin</>"),
+			"<Default> 点奥术伤害.</>"),
 			Level,
 			ManaCost,
 			CoolDown,
@@ -51,14 +51,14 @@ FString UArcaneShards::GetNextLevel(int32 Level)
 	const float CoolDown = GetCoolDown(Level);
 	
 	return FString::Printf(TEXT(
-		"<Title>NEXT LEVEL</>\n\n"
+		"<Title>升级效果</>\n\n"
 				
-		"<Small>Level: </><Level>%d</>\n"
-		"<Small>ManaCost: </><ManaCost>%.1f</>\n"
-		"<Small>CoolDown: </><CoolDown>%.1f</>\n\n"
-		"<Default>Summon %d shards of arcane energy causing radial arcane damage of </>"
+		"<Small>等级: </><Level>%d</>\n"
+		"<Small>魔力消耗: </><ManaCost>%.1f</>\n"
+		"<Small>冷却: </><CoolDown>%.1f</>\n\n"
+		"<Default>召唤 %d 块奥术能量碎片, 在碎片周边范围性造成 </>"
 		"<Damage>%d</>"
-		"<Default> at the shard origin</>"),
+		"<Default> 点奥术伤害.</>"),
 		Level,
 		ManaCost,
 		CoolDown,

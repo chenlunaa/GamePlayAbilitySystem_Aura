@@ -15,14 +15,14 @@ FString UAuraFireBolt::GetDescription(int32 Level)
 	if (Level == 1)
 	{
 		return FString::Printf(TEXT(
-			"<Title>FIRE BOLT</>\n\n"
+			"<Title>火球术</>\n\n"
 			
-			"<Small>Level: </><Level>%d</>\n"
-			"<Small>ManaCost: </><ManaCost>%.1f</>\n"
-			"<Small>CoolDown: </><CoolDown>%.1f</>\n\n"
-			"<Default>Launches a firebolt that explodes on impact, dealing </>"
+			"<Small>等级: </><Level>%d</>\n"
+			"<Small>魔力消耗: </><ManaCost>%.1f</>\n"
+			"<Small>冷却: </><CoolDown>%.1f</>\n\n"
+			"<Default>发射一枚可以爆炸的火球, 造成 </>"
 			"<Damage>%d</>"
-			"<Default> fire damage with a chance to burn.</>"),
+			"<Default> 火焰伤害并且有一定概率触发燃烧.</>"),
 			Level,
 			ManaCost,
 			CoolDown,
@@ -31,14 +31,14 @@ FString UAuraFireBolt::GetDescription(int32 Level)
 	else
 	{
 		return FString::Printf(TEXT(
-			"<Title>FIRE BOLT</>\n\n"
+			"<Title>火球术</>\n\n"
 			
-			"<Small>Level: </><Level>%d</>\n"
-			"<Small>ManaCost: </><ManaCost>%.1f</>\n"
-			"<Small>CoolDown: </><CoolDown>%.1f</>\n\n"
-			"<Default>Launches %d firebolts that explodes on impact, dealing </>"
+			"<Small>等级: </><Level>%d</>\n"
+			"<Small>魔力消耗: </><ManaCost>%.1f</>\n"
+			"<Small>冷却: </><CoolDown>%.1f</>\n\n"
+			"<Default>发射 %d 枚可以爆炸的火球, 造成 </>"
 			"<Damage>%d</>"
-			"<Default> fire damage with a chance to burn.</>"),
+			"<Default> 点火焰伤害并且有一定概率触发燃烧.</>"),
 			Level,
 			ManaCost,
 			CoolDown,
@@ -53,13 +53,14 @@ FString UAuraFireBolt::GetNextLevel(int32 Level)
 	const float CoolDown = GetCoolDown(Level);
 	const int32 ScaledDamage = Damage.GetValueAtLevel(Level);
 	return FString::Printf(TEXT(
-		"<Title>NEXT LEVEL</>\n\n"
+		"<Title>升级效果</>\n\n"
 		
-		"<Small>Level: </><Level>%d</>\n"
-		"<Small>ManaCost: </><ManaCost>%.1f</>\n"
-		"<Small>CoolDown: </><CoolDown>%.1f</>\n\n"
-		"<Default>Launches %d firebolts that explodes on impact, dealing </>"
-		"<Damage>%d</><Default> fire damage with a chance to burn.</>\n\n"),
+		"<Small>等级: </><Level>%d</>\n"
+		"<Small>魔力消耗: </><ManaCost>%.1f</>\n"
+		"<Small>冷却: </><CoolDown>%.1f</>\n\n"
+		"<Default>发射 %d 枚可以爆炸的火球, 造成 </>"
+		"<Damage>%d</>"
+		"<Default> 点火焰伤害并且有一定概率触发燃烧.</>"),
 		Level,
 		ManaCost,
 		CoolDown,
