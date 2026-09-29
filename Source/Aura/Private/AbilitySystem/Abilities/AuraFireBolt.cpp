@@ -7,7 +7,7 @@
 #include "Actor/AuraProjectile.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 
-FString UAuraFireBolt::GetDescription(int32 Level)
+FString UAuraFireBolt::GetDescription(int32 Level, float Value)
 {
 	const int32 ScaledDamage = Damage.GetValueAtLevel(Level);
 	const float ManaCost = -GetManaCost(Level);
@@ -47,7 +47,7 @@ FString UAuraFireBolt::GetDescription(int32 Level)
 	}
 }
 
-FString UAuraFireBolt::GetNextLevel(int32 Level)
+FString UAuraFireBolt::GetNextLevel(int32 Level, float Value)
 {
 	const float ManaCost = -GetManaCost(Level);
 	const float CoolDown = GetCoolDown(Level);

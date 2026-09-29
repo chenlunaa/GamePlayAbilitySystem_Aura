@@ -30,7 +30,7 @@ public:
 	/* end Mutual Interface*/
 	
 	// 只有有SaveGame标记的UPROPERTY才会被序列化
-	UPROPERTY(BlueprintReadOnly, SaveGame)
+	UPROPERTY(BlueprintReadWrite, SaveGame)
 	bool bReached = false;
 	
 protected:
@@ -44,13 +44,13 @@ protected:
 	UFUNCTION(BlueprintImplementableEvent)
 	void FinishSave();
 	
+	UFUNCTION(BlueprintCallable)
 	void HandleGlowEffects();
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	TObjectPtr<UStaticMeshComponent> CheckPointMesh;
 
 private:
-	
-	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<UStaticMeshComponent> CheckPointMesh;
-	
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<USphereComponent> Sphere;
 	

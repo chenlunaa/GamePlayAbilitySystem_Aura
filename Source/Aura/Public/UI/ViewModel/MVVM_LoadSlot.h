@@ -41,6 +41,9 @@ public:
 	UPROPERTY()
 	FName PlayerStartTag;
 	
+	UPROPERTY()
+	FString MapAssetName;
+	
 	/*
 	 * 通知字段
 	 */

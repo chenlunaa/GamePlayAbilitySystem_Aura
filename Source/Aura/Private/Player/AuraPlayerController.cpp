@@ -18,6 +18,8 @@
 #include "Input/AuraInputComponent.h"
 #include "Interaction/MutualInterface.h"
 #include "GameFramework/Character.h"
+#include "Interaction/EnemyInterface.h"
+#include "Interaction/HighLightInterface.h"
 #include "UI/Widget/DamageTextComponent.h"
 
 // 这行代码告诉虚幻引擎的服务器（Server）：这个 Player Controller 需要进行网络同步（复制）。在多人联机游戏中，服务器需要把控制器的状态、网络 RPC（远程过程调用）正确地分发和同步给对应的客户端。
@@ -109,8 +111,8 @@ void AAuraPlayerController::CursorTrace()
 {
 	if (GetASC() && GetASC()->HasMatchingGameplayTag(FAuraGameplayTags::Get().Player_Block_CursorTrace))
 	{
-		if (LastActor) LastActor->UnHighlightActor();
-		if (ThisActor) ThisActor->UnHighlightActor();
+		UnHighlightActor(LastActor);
+		UnHighlightActor(ThisActor);
 		LastActor = nullptr;
 		ThisActor = nullptr;
 		return;
@@ -120,7 +122,14 @@ void AAuraPlayerController::CursorTrace()
 	if (!CursorHit.bBlockingHit) return;
 
 	LastActor = ThisActor;
-	ThisActor = Cast<IEnemyInterface>(CursorHit.GetActor());
+	if (IsValid(CursorHit.GetActor()) && CursorHit.GetActor()->Implements<UHighLightInterface>())
+	{
+		ThisActor = CursorHit.GetActor();
+	}
+	else
+	{
+		ThisActor = nullptr;
+	}
 
 	/*
 	* 追踪鼠标的状况可能有以下几种情况
@@ -136,34 +145,21 @@ void AAuraPlayerController::CursorTrace()
 	*	-什么都不做
 	*/
 
-	if (LastActor == nullptr)
+	if (ThisActor != LastActor)
 	{
-		if (ThisActor != nullptr) {
-			//Case B
-			ThisActor->HighlightActor();
-		}
-		else {
-			//Case A
-		}
+		UnHighlightActor(LastActor);
+		HighlightActor(ThisActor);
 	}
-	else // LastActor != nullptr
-	{
-		if (ThisActor == nullptr) {
-			//Case C
-			LastActor->UnHighlightActor();
-		}
-		else //两个Actor都有效
-		{
-			if (LastActor != ThisActor) {
-				//Case D
-				LastActor->UnHighlightActor();
-				ThisActor->HighlightActor();
-			}
-			else {
-				//Case E 什么都不做
-			}
-		}
-	}
+}
+
+void AAuraPlayerController::HighlightActor(AActor* InActor)
+{
+	if (IsValid(InActor) && InActor->Implements<UHighLightInterface>()) IHighLightInterface::Execute_HighlightActor(InActor);
+}
+
+void AAuraPlayerController::UnHighlightActor(AActor* InActor)
+{
+	if (IsValid(InActor) && InActor->Implements<UHighLightInterface>()) IHighLightInterface::Execute_UnHighlightActor(InActor);
 }
 
 void AAuraPlayerController::AbilityInputTagPressed(FGameplayTag InputTag)
@@ -175,10 +171,27 @@ void AAuraPlayerController::AbilityInputTagPressed(FGameplayTag InputTag)
 	
 	if (InputTag.MatchesTagExact(FAuraGameplayTags::Get().InputTag_LMB))
 	{
-		bTargeting = ThisActor ? true : false;
+		if (IsValid(ThisActor))
+		{
+			if (ThisActor->Implements<UEnemyInterface>())
+			{
+				TargetingStatus = ETargetingStatus::TargetingEnemy;
+			}
+			else
+			{
+				TargetingStatus = ETargetingStatus::TargetingNotEnemy;
+			}
+		}
+		else
+		{
+			TargetingStatus = ETargetingStatus::NotTargeting;
+		}
 		bAutoRunning = false;
 	}
-	if (GetASC()) GetASC()->AbilityInputTagPressed(InputTag);
+	if (GetASC())
+	{
+		GetASC()->AbilityInputTagPressed(InputTag);
+	} 
 }
 
 void AAuraPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
@@ -197,7 +210,7 @@ void AAuraPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
 	{
 		GetASC()->AbilityInputTagReleased(InputTag);
 	}
-	if (!bTargeting && !bShiftKeyDown)
+	if (TargetingStatus != ETargetingStatus::TargetingEnemy && !bShiftKeyDown)
 	{
 		const APawn* ControllerPawn = GetPawn();
 		if (FollowTime <= ShortPressThreshold && ControllerPawn)
@@ -237,7 +250,7 @@ void AAuraPlayerController::AbilityInputTagHeld(FGameplayTag InputTag)
 		return;
 	}
 	
-	if (bTargeting || bShiftKeyDown)
+	if (TargetingStatus == ETargetingStatus::TargetingEnemy || bShiftKeyDown)
 	{
 		if (GetASC())
 		{
@@ -378,6 +391,7 @@ void AAuraPlayerController::Move(const FInputActionValue& InputActionValue)
 	if (APawn* ControlledPawn = GetPawn<APawn>()) {
 		ControlledPawn->AddMovementInput(ForwardDirection, InputAxisVector.Y); //这里和对应的IMC配置相关，这里把WS配置成了Y轴所以表示向前的是获取Y轴的输入。
 		ControlledPawn->AddMovementInput(RightDirection, InputAxisVector.X);
+		bAutoRunning = false;
 	}
 
 }

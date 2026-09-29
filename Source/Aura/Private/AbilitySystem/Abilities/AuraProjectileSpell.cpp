@@ -7,14 +7,13 @@
 #include "AbilitySystemComponent.h"
 #include "Actor/AuraProjectile.h"
 #include "Interaction/CombatInterface.h"
-#include "Aura/Public/AuraGameplayTags.h"
 
-FString UAuraProjectileSpell::GetDescription(int32 Level)
+FString UAuraProjectileSpell::GetDescription(int32 Level, float Value)
 {
 	return Super::GetDescription(Level);
 }
 
-FString UAuraProjectileSpell::GetNextLevel(int32 Level)
+FString UAuraProjectileSpell::GetNextLevel(int32 Level, float Value)
 {
 	return Super::GetNextLevel(Level);
 }

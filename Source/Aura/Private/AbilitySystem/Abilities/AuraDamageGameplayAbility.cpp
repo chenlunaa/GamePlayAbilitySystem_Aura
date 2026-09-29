@@ -6,7 +6,6 @@
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
 #include "AuraAbilityTypes.h"
-#include "AuraGameplayTags.h"
 
 void UAuraDamageGameplayAbility::CauseDamage(AActor* TargetActor)
 {

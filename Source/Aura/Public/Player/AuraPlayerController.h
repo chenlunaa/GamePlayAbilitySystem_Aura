@@ -4,10 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
-#include "Interaction/EnemyInterface.h"
 #include "GameplayTagContainer.h"
 #include "AuraPlayerController.generated.h"
 
+class IHighLightInterface;
 class AMagicCircle;
 class UNiagaraSystem;
 class UDamageTextComponent;
@@ -19,6 +19,13 @@ struct FInputActionValue;
 class UAuraAbilitySystemComponent;
 class USplineComponent;
 class IMutualInterface;
+
+enum class ETargetingStatus : uint8
+{
+	TargetingEnemy,
+	TargetingNotEnemy,
+	NotTargeting
+};
 
 /**
  * 
@@ -78,9 +85,13 @@ private:
 	void Move(const FInputActionValue& InputActionValue);// 回调函数，获得实际移动数据
 	//这是一个非常强大的数据包裹。无论玩家是用手柄摇杆（推多大距离产生多大的浮点数值）还是键盘（按下就是 1，松开就是 0），引擎都会把这些输入数据封装进 InputActionValue 中传给这个函数。
 	void CursorTrace();
-	IEnemyInterface* LastActor;
-	IEnemyInterface* ThisActor;
+	UPROPERTY()
+	TObjectPtr<AActor> LastActor;
+	UPROPERTY()
+	TObjectPtr<AActor> ThisActor;
 	FHitResult CursorHit;
+	static void HighlightActor(AActor* InActor);
+	static void UnHighlightActor(AActor* InActor);
 	
 	void AbilityInputTagPressed(FGameplayTag InputTag);
 	void AbilityInputTagReleased(FGameplayTag InputTag);
@@ -101,7 +112,8 @@ private:
 	float FollowTime = 0.f;
 	float ShortPressThreshold = 0.5f;
 	bool bAutoRunning = false;
-	bool bTargeting = false;
+
+	ETargetingStatus TargetingStatus = ETargetingStatus::NotTargeting;
 	
 	UPROPERTY(EditDefaultsOnly)
 	float AutoRunAcceptanceRadius = 50.f;

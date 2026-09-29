@@ -7,6 +7,7 @@
 #include "AuraAbilityTypes.h"
 #include "AuraAbilitySystemLibrary.generated.h"
 
+class ULootTiers;
 class ULoadScreenSaveGame;
 class UAbilityInfo;
 class AAuraHUD;
@@ -58,6 +59,9 @@ public:
 	
 	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|AbilityInfo")
 	static UAbilityInfo* GetAbilityInfo(const UObject* WorldContextObject);
+	
+	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|LootTiers", meta=(DefaultToSelf="WorldContextObject"))
+	static ULootTiers* GetLootTiers(const UObject* WorldContextObject);
 	
 	/*
 	 * FAuraGameplayEffectContext Params Getter Begin

@@ -25,3 +25,13 @@ void UAuraPassiveAbility::ReceiveDeactivate(const FGameplayTag& AbilityTag)
 		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, true);
 	}
 }
+
+FString UAuraPassiveAbility::GetDescription(int32 Level, float Value)
+{
+	return FString();
+}
+
+FString UAuraPassiveAbility::GetNextLevel(int32 Level, float Value)
+{
+	return FString();
+}

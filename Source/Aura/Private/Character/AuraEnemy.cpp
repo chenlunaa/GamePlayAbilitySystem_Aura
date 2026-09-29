@@ -48,7 +48,7 @@ void AAuraEnemy::PossessedBy(AController* NewController)
 	AuraAIController->GetBlackboardComponent()->SetValueAsBool(FName("RangedAttacker"), CharacterClass != ECharacterClass::Warrior);
 }
 
-void AAuraEnemy::HighlightActor()
+void AAuraEnemy::HighlightActor_Implementation()
 {
 	// 设置角色网格组件和武器组件的自定义深度渲染，使它们在游戏中被高亮显示。具体来说，这段代码启用了自定义深度渲染，
 	// 并将自定义深度模板值设置为 CUSTOM_DEPTH_RED（一个预定义的常量，通常用于指定红色高亮）。
@@ -60,7 +60,7 @@ void AAuraEnemy::HighlightActor()
 	Weapon->SetCustomDepthStencilValue(CUSTOM_DEPTH_RED);
 }
 
-void AAuraEnemy::UnHighlightActor()
+void AAuraEnemy::UnHighlightActor_Implementation()
 {
 	GetMesh()->SetRenderCustomDepth(false);
 	Weapon->SetRenderCustomDepth(false);
@@ -76,6 +76,7 @@ void AAuraEnemy::Die(const FVector& DeathImpulse)
 	SetLifeSpan(LifeSpan);
 	
 	if (AuraAIController) AuraAIController->GetBlackboardComponent()->SetValueAsBool(FName("Dead"), true);
+	SpawnLoot();
 	Super::Die(DeathImpulse);
 }
 

@@ -73,7 +73,7 @@ public:
 	void UpdateAbilityStatus(int32 Level);
 	
 	UFUNCTION(Server, Reliable)
-	void ServerSpendSpellPoints(const FGameplayTag& AbilityTag);
+	void ServerSpendSpellPoints(const FGameplayTag& AbilityTag, int32 Level);
 	
 	bool GetDescriptionsByAbilityTag(const FGameplayTag& AbilityTag, FString& OutDescription, FString& OutNextLevelDescription);
 	

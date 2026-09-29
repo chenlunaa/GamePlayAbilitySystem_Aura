@@ -6,7 +6,7 @@
 #include "AbilitySystem/AuraAbilitySystemLibrary.h"
 #include "Actor/AuraFireBall.h"
 
-FString UAuraFireBlast::GetDescription(int32 Level)
+FString UAuraFireBlast::GetDescription(int32 Level, float Value)
 {
 	const int32 ScaledDamage = Damage.GetValueAtLevel(Level);
 	const float ManaCost = -GetManaCost(Level);
@@ -29,7 +29,7 @@ FString UAuraFireBlast::GetDescription(int32 Level)
 		ScaledDamage);
 }
 
-FString UAuraFireBlast::GetNextLevel(int32 Level)
+FString UAuraFireBlast::GetNextLevel(int32 Level, float Value)
 {
 	const int32 ScaledDamage = Damage.GetValueAtLevel(Level);
 	const float ManaCost = -GetManaCost(Level);

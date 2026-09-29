@@ -6,6 +6,7 @@
 #include "Character/AuraCharacterBase.h"
 #include "UI/WidgetController/OverlayWidgetController.h"
 #include "Interaction/EnemyInterface.h"
+#include "Interaction/HighLightInterface.h"
 #include "AuraEnemy.generated.h" // 必须是最后一个include
 
 
@@ -17,7 +18,7 @@ class UWidgetComponent;
  * 
  */
 UCLASS()
-class AURA_API AAuraEnemy : public AAuraCharacterBase, public IEnemyInterface
+class AURA_API AAuraEnemy : public AAuraCharacterBase, public IEnemyInterface, public IHighLightInterface
 {
 	GENERATED_BODY()
 public:
@@ -25,10 +26,10 @@ public:
 	AAuraEnemy();
 	virtual void PossessedBy(AController* NewController) override;
 
-	// 敌人接口
-	virtual void HighlightActor() override;
-	virtual void UnHighlightActor() override;
-	// 结束敌人接口
+	// HighLight Interface
+	virtual void HighlightActor_Implementation() override;
+	virtual void UnHighlightActor_Implementation() override;
+	// end HighLight Interface
 	
 	// Combat Interface
 	virtual int32 GetPlayerLevel_Implementation() override;
@@ -54,6 +55,9 @@ public:
 	UPROPERTY(BlueprintReadWrite, Category="Combat")
 	TObjectPtr<AActor> CombatTarget;
 	
+	void SetLevel(const int32 InLevel){Level = InLevel;}
+	void SetCharacterClass(const ECharacterClass InCharacterClass){CharacterClass = InCharacterClass;}
+	
 protected:
 	virtual void BeginPlay() override;
 	virtual void InitAbilityActorInfo() override;
@@ -71,4 +75,7 @@ protected:
 	
 	UPROPERTY()
 	TObjectPtr<AAuraAIController> AuraAIController;
+	
+	UFUNCTION(BlueprintImplementableEvent)
+	void SpawnLoot();
 };

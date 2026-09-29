@@ -5,6 +5,7 @@
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AuraGameplayTags.h"
 #include "AbilitySystem/AuraAbilitySystemLibrary.h"
+#include "AbilitySystem/AuraAttributeSet.h"
 #include "AbilitySystem/Abilities/AuraGameplayAbility.h"
 #include "AbilitySystem/Data/AbilityInfo.h"
 #include "Aura/AuraLogChannels.h"
@@ -309,7 +310,9 @@ void UAuraAbilitySystemComponent::UpdateAbilityStatus(int32 Level)
 		// 数据表里若存在空条目,会生成一个连Ability都为空的Spec,后面遍历时还有空指针风险
 		if (!Info.AbilityTag.IsValid() || Info.Ability == nullptr) continue;
 		
-		if (Level >= Info.LevelRequirements && GetSpecFromAbilityTag(Info.AbilityTag) == nullptr)
+		const bool bIsValid = GetStatusFromAbilityTag(Info.LockNeedAbility) == FAuraGameplayTags::Get().Abilities_Status_Equipped || GetStatusFromAbilityTag(Info.LockNeedAbility) == FAuraGameplayTags::Get().Abilities_Status_Unlocked;
+		
+		if (Level >= Info.LevelRequirements && GetSpecFromAbilityTag(Info.AbilityTag) == nullptr && bIsValid)
 		{
 			FGameplayAbilitySpec AbilitySpec = FGameplayAbilitySpec(Info.Ability, 1);
 			AbilitySpec.GetDynamicSpecSourceTags().AddTag(FAuraGameplayTags::Get().Abilities_Status_Eligible);
@@ -328,8 +331,28 @@ bool UAuraAbilitySystemComponent::GetDescriptionsByAbilityTag(const FGameplayTag
 	{
 		if (UAuraGameplayAbility* AuraAbility = Cast<UAuraGameplayAbility>(AbilitySpec->Ability))
 		{
-			OutDescription = AuraAbility->GetDescription(AbilitySpec->Level);
-			OutNextLevelDescription = AuraAbility->GetNextLevel(AbilitySpec->Level + 1);
+			if (AbilityTag.MatchesTagExact(FAuraGameplayTags::Get().Abilities_Passive_LifeSiphon))
+			{
+				const UAuraAttributeSet* AuraAS = GetSet<UAuraAttributeSet>();
+				if (IsValid(AuraAS))
+				{
+					OutDescription = AuraAbility->GetDescription(AbilitySpec->Level, AuraAS->GetHealthRegeneration());
+					OutNextLevelDescription = AuraAbility->GetNextLevel(AbilitySpec->Level + 1, AuraAS->GetHealthRegeneration());
+				}
+			}else if (AbilityTag.MatchesTagExact(FAuraGameplayTags::Get().Abilities_Passive_ManaSiphon))
+			{
+				const UAuraAttributeSet* AuraAS = GetSet<UAuraAttributeSet>();
+				if (IsValid(AuraAS))
+				{
+					OutDescription = AuraAbility->GetDescription(AbilitySpec->Level, AuraAS->GetManaRegeneration());
+					OutNextLevelDescription = AuraAbility->GetNextLevel(AbilitySpec->Level + 1, AuraAS->GetManaRegeneration());
+				}
+			}
+			else
+			{
+				OutDescription = AuraAbility->GetDescription(AbilitySpec->Level);
+				OutNextLevelDescription = AuraAbility->GetNextLevel(AbilitySpec->Level + 1);
+			}
 			return true;
 		}
 	}
@@ -438,7 +461,7 @@ void UAuraAbilitySystemComponent::ServerEquipAbility_Implementation(const FGamep
 	}
 }
 
-void UAuraAbilitySystemComponent::ServerSpendSpellPoints_Implementation(const FGameplayTag& AbilityTag)
+void UAuraAbilitySystemComponent::ServerSpendSpellPoints_Implementation(const FGameplayTag& AbilityTag, int32 Level)
 {
 	const FAuraGameplayTags GameplayTags = FAuraGameplayTags::Get();
 	if (FGameplayAbilitySpec* AbilitySpec = GetSpecFromAbilityTag(AbilityTag))
@@ -454,6 +477,7 @@ void UAuraAbilitySystemComponent::ServerSpendSpellPoints_Implementation(const FG
 			AbilitySpec->GetDynamicSpecSourceTags().RemoveTag(GameplayTags.Abilities_Status_Eligible);
 			AbilitySpec->GetDynamicSpecSourceTags().AddTag(GameplayTags.Abilities_Status_Unlocked);
 			Status = GameplayTags.Abilities_Status_Unlocked;
+			UpdateAbilityStatus(Level);
 		}
 		else if (Status.MatchesTagExact(GameplayTags.Abilities_Status_Equipped) || Status.MatchesTagExact(GameplayTags.Abilities_Status_Unlocked))
 		{

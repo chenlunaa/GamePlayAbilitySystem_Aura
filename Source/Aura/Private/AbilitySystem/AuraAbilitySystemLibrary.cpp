@@ -9,7 +9,6 @@
 #include "AbilitySystem/Data/CharacterClassInfo.h"
 #include "Engine/OverlapResult.h"
 #include "Game/AuraGameModeBase.h"
-#include "Game/LoadScreenSaveGame.h"
 #include "Interaction/CombatInterface.h"
 #include "Interaction/MutualInterface.h"
 #include "Kismet/GameplayStatics.h"
@@ -138,6 +137,13 @@ UAbilityInfo* UAuraAbilitySystemLibrary::GetAbilityInfo(const UObject* WorldCont
 	AAuraGameModeBase* AuraGameMode = Cast<AAuraGameModeBase>(UGameplayStatics::GetGameMode(WorldContextObject));
 	if (AuraGameMode == nullptr) return nullptr;
 	return AuraGameMode->AbilityInfo;
+}
+
+ULootTiers* UAuraAbilitySystemLibrary::GetLootTiers(const UObject* WorldContextObject)
+{
+	AAuraGameModeBase* AuraGameMode = Cast<AAuraGameModeBase>(UGameplayStatics::GetGameMode(WorldContextObject));
+	if (AuraGameMode == nullptr) return nullptr;
+	return AuraGameMode->LootTiers;
 }
 
 bool UAuraAbilitySystemLibrary::IsBlockedHit(const FGameplayEffectContextHandle& EffectContextHandle)
@@ -532,7 +538,15 @@ TArray<FRotator> UAuraAbilitySystemLibrary::EvenlySpacedRotators(const FVector& 
 	const FVector RightOfSpread = Forward.RotateAngleAxis(Spread / 2.f, Axis);
 	if (NumRotators > 1)
 	{
-		const float DeltaSpread = Spread / (NumRotators - 1);
+		float DeltaSpread = 0.f;
+		if (FMath::IsNearlyEqual(Spread, 360.f))
+		{
+			DeltaSpread = Spread / NumRotators;
+		}
+		else
+		{
+			DeltaSpread = Spread / (NumRotators - 1);
+		}
 		for (int32 i = 0; i < NumRotators; i++)
 		{
 			const FVector Direction = RightOfSpread.RotateAngleAxis(DeltaSpread * i, FVector::DownVector);
@@ -553,7 +567,15 @@ TArray<FVector> UAuraAbilitySystemLibrary::EvenlyRotatedVectors(const FVector& F
 	const FVector RightOfSpread = Forward.RotateAngleAxis(Spread / 2.f, Axis);
 	if (NumVectors > 1)
 	{
-		const float DeltaSpread = Spread / (NumVectors - 1);
+		float DeltaSpread = 0.f;
+		if (FMath::IsNearlyEqual(Spread, 360.f))
+		{
+			DeltaSpread = Spread / NumVectors;
+		}
+		else
+		{
+			DeltaSpread = Spread / (NumVectors - 1);
+		}
 		for (int32 i = 0; i < NumVectors; i++)
 		{
 			const FVector Direction = RightOfSpread.RotateAngleAxis(DeltaSpread * i, FVector::DownVector);

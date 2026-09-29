@@ -5,19 +5,21 @@
 
 #include "AbilitySystem/AuraAttributeSet.h"
 
-FString UAuraGameplayAbility::GetDescription(int32 Level)
+FString UAuraGameplayAbility::GetDescription(int32 Level, float Value)
 {
 	return FString::Printf(TEXT("<Default>%s, </><Level>%d</>"), L"Default Ability Name - LoremIpsum, LoremIpsum, LoremIpsum, LoremIpsum", Level);
 }
 
-FString UAuraGameplayAbility::GetNextLevel(int32 Level)
+FString UAuraGameplayAbility::GetNextLevel(int32 Level, float Value)
 {
 	return FString::Printf(TEXT("<Default>Next Level: </><Level>%d</> \n<Default> Causes more Damage </>"), Level);
 }
 
 FString UAuraGameplayAbility::GetLockedDescription(int32 Level)
 {
-	return FString::Printf(TEXT("<Default>Spell Locked Until Level: %d</>"), Level);
+	return FString::Printf(TEXT("<Default>该技能需要达到等级: %d</>\n"
+		"<Default>并且解锁前置技能才能解锁</>"), 
+		Level);
 }
 
 float UAuraGameplayAbility::GetManaCost(float InLevel) const

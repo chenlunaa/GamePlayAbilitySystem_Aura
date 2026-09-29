@@ -3,7 +3,7 @@
 
 #include "AbilitySystem/Abilities/Electrocute.h"
 
-FString UElectrocute::GetDescription(int32 Level)
+FString UElectrocute::GetDescription(int32 Level, float Value)
 {
 	const int32 ScaledDamage = Damage.GetValueAtLevel(Level);
 	const float ManaCost = -GetManaCost(Level);
@@ -44,7 +44,7 @@ FString UElectrocute::GetDescription(int32 Level)
 	}
 }
 
-FString UElectrocute::GetNextLevel(int32 Level)
+FString UElectrocute::GetNextLevel(int32 Level, float Value)
 {
 	const int32 ScaledDamage = Damage.GetValueAtLevel(Level);
 	const float ManaCost = -GetManaCost(Level);

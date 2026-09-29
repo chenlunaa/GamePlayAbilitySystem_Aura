@@ -6,7 +6,7 @@
 #include "Actor/AuraFireAround.h"
 #include "GameFramework/Pawn.h"
 
-FString UFireAround::GetDescription(int32 Level)
+FString UFireAround::GetDescription(int32 Level, float Value)
 {
 	const int32 ScaledDamage = Damage.GetValueAtLevel(Level);
 	const float ManaCost = -GetManaCost(Level);
@@ -29,7 +29,7 @@ FString UFireAround::GetDescription(int32 Level)
 		ScaledDamage);
 }
 
-FString UFireAround::GetNextLevel(int32 Level)
+FString UFireAround::GetNextLevel(int32 Level, float Value)
 {
 	const int32 ScaledDamage = Damage.GetValueAtLevel(Level);
 	const float ManaCost = -GetManaCost(Level);

@@ -31,6 +31,9 @@ struct FAuraAbilityInfo
 	FGameplayTag AbilityTypeTag = FGameplayTag();
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	FGameplayTag LockNeedAbility = FGameplayTag();
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TObjectPtr<const UTexture2D> Icon = nullptr;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)

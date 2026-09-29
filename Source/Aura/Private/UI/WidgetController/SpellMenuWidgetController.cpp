@@ -119,7 +119,7 @@ void USpellMenuWidgetController::SpendPointsButtonPressed()
 {
 	if (GetAuraASC())
 	{
-		GetAuraASC()->ServerSpendSpellPoints(SelectedAbility.Ability);
+		GetAuraASC()->ServerSpendSpellPoints(SelectedAbility.Ability, GetAuraPS()->GetPlayerLevel());
 	}
 }
 

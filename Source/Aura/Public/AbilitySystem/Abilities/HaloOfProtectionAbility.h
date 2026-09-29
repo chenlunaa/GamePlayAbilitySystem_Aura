@@ -3,20 +3,18 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AbilitySystem/Abilities/AuraDamageGameplayAbility.h"
-#include "ArcaneShards.generated.h"
+#include "AbilitySystem/Abilities/AuraPassiveAbility.h"
+#include "HaloOfProtectionAbility.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class AURA_API UArcaneShards : public UAuraDamageGameplayAbility
+class AURA_API UHaloOfProtectionAbility : public UAuraPassiveAbility
 {
 	GENERATED_BODY()
+	
 public:
 	virtual FString GetDescription(int32 Level, float Value) override;
 	virtual FString GetNextLevel(int32 Level, float Value) override;
-	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	int32 MaxNumShocks = 11;
 };
